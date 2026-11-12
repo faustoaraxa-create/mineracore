@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Mineracore</title>
+    <!-- Carrega o CSS geral e o CSS do dashboard -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>Mineracore</h1>
+    <p>Painel de Controle Operacional</p>
+</header>
+
+<main>
+    <div class="grid-modulos">
+        
+        <!-- CARD 1: Bloco de Lavra -->
+        <div class="card-modulo">
+            <div class="icone">🏔️</div>
+            <h2>Planejamento do Banco</h2>
+            <p>Cálculo de volume in situ, volume solto e tonelagem do bloco de lavra.</p>
+            <a href="/lavra"><button>Iniciar Banco</button></a>
+        </div>
+
+        <!-- CARD 2: Equipamento de Carga -->
+        <div class="card-modulo">
+            <div class="icone">🚜</div>
+            <h2>Equipamento de Carga</h2>
+            <p>Dimensionamento da concha, passes e produtividade por hora (t/h).</p>
+            <a href="/operacao"><button>Dimensionar Carga</button></a>
+        </div>
+
+        <!-- CARD 3: Caminhões -->
+        <div class="card-modulo">
+            <div class="icone">🚛</div>
+            <h2>Frota de Transporte</h2>
+            <p>Análise de tempo de ciclo, número de caminhões e gargalo operacional.</p>
+            <a href="/dimensionamento_caminhoes"><button>Dimensionar Frota</button></a>
+        </div>
+
+        <!-- CARD 4: Plano Operacional Anual -->
+        <div class="card-modulo">
+            <div class="icone">📅</div>
+            <h2>Plano Operacional Anual</h2>
+            <p>Definição de turnos, paradas diárias, chuva mês a mês e metas anuais de lavra.</p>
+            <a href="/planejamento_mensal"><button>Iniciar Planejamento</button></a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

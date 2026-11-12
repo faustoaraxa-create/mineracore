@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Operacional Anual - Mineracore</title>
+    <!-- CSS Externo Único do Módulo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/resultado_planejamento.css') }}">
+</head>
+<body>
+
+<header class="no-print">
+    <h1>MINERACORE</h1>
+    <p>Relatório de Dimensionamento e Plano Operacional Anual</p>
+</header>
+
+<main>
+    <div class="relatorio-container">
+        
+        <!-- Cabeçalho de Ações e Navegação por Abas -->
+        <div class="header-acoes no-print">
+            <div class="abas-navegacao">
+                <button class="btn-aba active" onclick="alternarAba('aba-relatorio', this)">📊 Relatório Operacional</button>
+                <button class="btn-aba" onclick="alternarAba('aba-metodologia', this)">📘 Metodologia de Cálculo</button>
+            </div>
+            
+            <div class="botoes-topo">
+                <button type="button" class="btn-imprimir" onclick="window.print()">🖨️ Imprimir Relatório</button>
+            </div>
+        </div>
+
+        <!-- ABA 1: RELATÓRIO OPERACIONAL -->
+        <div id="aba-relatorio" class="conteudo-aba active">
+            <h2>Relatório Operacional: {{ contrato }}</h2>
+
+            <!-- Resumo Geral dos Parâmetros -->
+            <fieldset>
+                <legend>Resumo Geral dos Parâmetros e Regime</legend>
+                <div class="form-row">
+                    <div><strong>Material:</strong> {{ material }}</div>
+                    <div><strong>Meta Anual:</strong> {{ "{:,.2f}".format(meta) }} {{ unidade }}</div>
+                    <div><strong>Densidade:</strong> {{ densidade }} t/m³</div>
+                </div>
+                <div class="form-row margin-top-sm">
+                    <div><strong>Fator Empolamento:</strong> {{ empolamento }}</div>
+                    <div><strong>Perfil de Turno:</strong> Turno de {{ escala }} Horas ({{ turnos_dia }} turnos/dia)</div>
+                    <div><strong>Paradas Totais:</strong> {{ paradas_min }} min/turno</div>
+                </div>
+                <div class="form-row margin-top-sm">
+                    <div><strong>Efetivo por Turno:</strong> {{ horas_efetivas_turno }} horas úteis</div>
+                    <div><strong>Total Operado / Dia (24h):</strong> {{ horas_efetivas_dia_total }} horas/dia</div>
+                </div>
+            </fieldset>
+
+            <!-- Logística e Ciclo de Transporte -->
+            <fieldset>
+                <legend>Logística e Ciclo de Transporte</legend>
+                <div class="logistica-grid">
+                    <div class="card-info">
+                        <span class="label">Distância (Ida / Volta)</span>
+                        <span class="val">{{ dist_ida }} km / {{ dist_volta }} km</span>
+                    </div>
+                    <div class="card-info">
+                        <span class="label">Velocidade (Carregado / Vazio)</span>
+                        <span class="val">{{ vel_carregado }} km/h / {{ vel_vazio }} km/h</span>
+                    </div>
+                    <div class="card-info">
+                        <span class="label">Tempos Fixos (Carga/Fila/Descarga)</span>
+                        <span class="val">{{ tempo_fixo }} min</span>
+                    </div>
+                    <div class="card-info destaque-ciclo">
+                        <span class="label">Tempo de Ciclo Total</span>
+                        <span class="val-ciclo">{{ tempo_ciclo }} <small>min</small></span>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Cards com KPIs Principais -->
+            <fieldset>
+                <legend>Tempo Estimado e Produtividade Operacional</legend>
+                <div class="cards-grid">
+                    <div class="card-stat">
+                        <div class="title">Tempo Estimado Total</div>
+                        <div class="value">{{ dias_estimados }}</div>
+                        <div class="unit">dias operacionais</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="title">Equivalente em Meses</div>
+                        <div class="value">{{ meses_estimados }}</div>
+                        <div class="unit">meses</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="title">Total de Horas Úteis (Ano)</div>
+                        <div class="value">{{ total_horas }}</div>
+                        <div class="unit">horas úteis</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="title">Total Paradas Chuva</div>
+                        <div class="value val-chuva">{{ total_chuva }}</div>
+                        <div class="unit">horas/ano</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="title">Total Paradas Manutenção</div>
+                        <div class="value val-maint">{{ total_manutencao }}</div>
+                        <div class="unit">horas/ano</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="title">Produção Média Diária</div>
+                        <div class="value">{{ "{:,.2f}".format(prod_dia) }}</div>
+                        <div class="unit">toneladas/dia</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="title">Ritmo Necessário por Hora</div>
+                        <div class="value">{{ "{:,.2f}".format(prod_hora) }}</div>
+                        <div class="unit">toneladas/h</div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Tabela Mensal com Manutenção e Chuvas -->
+            <fieldset>
+                <legend>Distribuição Mensal da Produção (Diluída por Horas Úteis, Chuvas e Manutenção)</legend>
+                <div class="table-responsive">
+                    <table class="tabela-distribuicao">
+                        <thead>
+                            <tr>
+                                <th>Mês</th>
+                                <th>Horas de Chuva (h)</th>
+                                <th>Horas de Manutenção (h)</th>
+                                <th>Horas Úteis Produtivas (h)</th>
+                                <th>Produção Planejada (toneladas)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in distribuicao %}
+                            <tr>
+                                <td><strong>{{ item.mes }}</strong></td>
+                                <td class="txt-chuva">{{ item.chuva }} h</td>
+                                <td class="txt-maint">{{ item.manutencao }} h</td>
+                                <td class="txt-uteis"><strong>{{ item.horas_uteis }} h</strong></td>
+                                <td><strong>{{ "{:,.2f}".format(item.producao) }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- ABA 2: METODOLOGIA DE CÁLCULO -->
+        <div id="aba-metodologia" class="conteudo-aba">
+            <h2>Metodologia de Cálculo Operacional (Mineracore)</h2>
+            
+            <div class="bloco-metodologia">
+                <div class="item-metodologia">
+                    <h3>1. Horas Efetivas por Turno e Dia</h3>
+                    <p>Descontam-se todas as paradas sistêmicas (refeições, descansos, trocas de turno e abastecimento) do total de horas brutas da jornada:</p>
+                    <code>Horas Efetivas/Turno = Jornada do Turno - (Total Paradas Minutos / 60)</code>
+                    <code>Horas Efetivas/Dia = Horas Efetivas/Turno × Número de Turnos no Dia</code>
+                </div>
+
+                <div class="item-metodologia">
+                    <h3>2. Ciclo Completo de Transporte ($T_c$)</h3>
+                    <p>O tempo de ciclo integra os tempos de deslocamento carregado/vazio com os tempos fixos (carga, descarga, fila e manobras):</p>
+                    <code>Tempo de Percurso (min) = [(Dist. Ida / Vel. Carregado) + (Dist. Volta / Vel. Vazio)] × 60</code>
+                    <code>Tempo de Ciclo Total (min) = Tempo de Percurso + Tempos Fixos</code>
+                </div>
+
+                <div class="item-metodologia">
+                    <h3>3. Calendário Anual e Horas Úteis Mensais</h3>
+                    <p>Baseado nos dias reais de cada mês (ano de 365 dias), deduzem-se as paralisações por chuva e manutenção mecânica:</p>
+                    <code>Horas Brutas Mês = Dias do Mês × Horas Efetivas/Dia</code>
+                    <code>Horas Úteis Mês = Horas Brutas Mês - (Horas Chuva + Horas Manutenção)</code>
+                </div>
+
+                <div class="item-metodologia">
+                    <h3>4. Produtividade e Ritmo de Lavra</h3>
+                    <p>A meta anual é rateada proporcionalmente às horas úteis operacionais disponíveis de cada mês:</p>
+                    <code>Ritmo Necessário (t/h) = Meta de Produção Anual / Total de Horas Úteis no Ano</code>
+                    <code>Produção Média Diária (t/dia) = Meta de Produção Anual / Dias Operacionais Estimados</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra Inferior de Navegação e Avanço -->
+        <div class="rodape-acoes no-print">
+            <a href="/planejamento_mensal" class="btn-voltar">← Alterar Parâmetros</a>
+            
+            <!-- Formulário que envia APENAS a Meta de Produção e o Total de Horas para a próxima etapa (Dimensionamento de Frota) -->
+            <form action="/dimensionamento_frota" method="POST" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="meta_producao" value="{{ meta }}">
+                <input type="hidden" name="total_horas_uteis" value="{{ total_horas }}">
+                <input type="hidden" name="ritmo_hora" value="{{ prod_hora }}">
+                <input type="hidden" name="unidade_meta" value="{{ unidade }}">
+                <button type="submit" class="btn-proximo">Avançar para Próxima Etapa →</button>
+            </form>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    function alternarAba(abaId, elementoBtn) {
+        // Ocultar todos os conteúdos das abas
+        const conteudos = document.querySelectorAll('.conteudo-aba');
+        conteudos.forEach(c => c.classList.remove('active'));
+
+        // Desativar todos os botões de abas
+        const botoes = document.querySelectorAll('.btn-aba');
+        botoes.forEach(b => b.classList.remove('active'));
+
+        // Ativar a aba e o botão selecionados
+        document.getElementById(abaId).classList.add('active');
+        elementoBtn.classList.add('active');
+    }
+</script>
+
+</body>
+</html>

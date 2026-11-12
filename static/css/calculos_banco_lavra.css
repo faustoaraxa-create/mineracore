@@ -1,0 +1,111 @@
+/* ==========================================================================
+   MINERACORE - TEMA ESCURO: PLANEAMENTO DO BANCO (banco.css)
+   ========================================================================== */
+
+:root {
+    --bg-main: #0b1120;          /* Fundo noturno profundo */
+    --bg-card: #151e32;          /* Painéis/cards principais */
+    --bg-input: #090e1a;         /* Campos de entrada */
+    
+    --border-card: #23314d;      /* Borda suave dos cards */
+    --border-input: #334466;     /* Borda dos inputs */
+    
+    --text-primary: #f8fafc;     /* Texto principal branco */
+    --text-secondary: #94a3b8;   /* Labels e textos auxiliares */
+    
+    --accent-blue: #38bdf8;      /* Azul neon para títulos */
+    --accent-green: #22c55e;     /* Verde para o botão de ação */
+    --accent-green-hover: #16a34a;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 10px 0;
+}
+
+/* --- CARDS E BLOCOS DO BANCO --- */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.2s ease;
+}
+
+.card:hover {
+    border-color: #2b3e66;
+}
+
+.card-title {
+    color: var(--accent-blue);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border-card);
+    padding-bottom: 12px;
+}
+
+/* --- CAMPOS DO FORMULÁRIO --- */
+.form-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.form-control {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-input);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    padding: 9px 12px;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    background-color: var(--bg-input);
+    border-color: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+    outline: none;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+/* Destaque para o campo de tonelagem com máscara */
+.mask-milhar {
+    color: #ffffff !important;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+/* --- BOTÃO PRINCIPAL DE PROCESSAR --- */
+.btn-success {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.15rem;
+    border-radius: 8px;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+}
+
+.btn-success:active {
+    transform: translateY(0);
+}

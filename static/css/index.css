@@ -1,0 +1,153 @@
+/* ==============================================================================
+   ESTILO GLOBAL E VARIÁVEIS DO MINERACORE (style.css)
+   ============================================================================== */
+:root {
+    --bg-principal: #0b0f19;
+    --bg-card: #151c2c;
+    --bg-card-hover: #1e293b;
+    --texto-principal: #f8fafc;
+    --texto-secundario: #94a3b8;
+    --azul-destaque: #38bdf8;
+    --verde-sucesso: #22c55e;
+    --verde-hover: #16a34a;
+    --borda: #1e293b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-principal);
+    color: var(--texto-principal);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ------------------------------------------------------------------------------
+   CABEÇALHO (HEADER)
+   ------------------------------------------------------------------------------ */
+header {
+    width: 100%;
+    padding: 30px 20px;
+    text-align: center;
+    background-color: rgba(21, 28, 44, 0.8);
+    border-bottom: 1px solid var(--borda);
+    backdrop-filter: blur(10px);
+}
+
+header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--texto-principal);
+    text-transform: uppercase;
+}
+
+header p {
+    color: var(--azul-destaque);
+    font-size: 0.95rem;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* ------------------------------------------------------------------------------
+   CONTEÚDO PRINCIPAL (MAIN)
+   ------------------------------------------------------------------------------ */
+main {
+    max-width: 1100px;
+    width: 90%;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+/* ------------------------------------------------------------------------------
+   SEÇÃO HERO (DESTAQUE INICIAL)
+   ------------------------------------------------------------------------------ */
+.hero {
+    text-align: center;
+    background: linear-gradient(145deg, #151c2c 0%, #0d1322 100%);
+    padding: 50px 30px;
+    border-radius: 16px;
+    border: 1px solid var(--borda);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.hero h2 {
+    font-size: 1.8rem;
+    color: var(--texto-principal);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.hero p {
+    font-size: 1.05rem;
+    color: var(--texto-secundario);
+    max-width: 750px;
+    margin: 0 auto 35px auto;
+    line-height: 1.6;
+}
+
+.hero button {
+    background-color: var(--verde-sucesso);
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 16px 36px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero button:hover {
+    background-color: var(--verde-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+/* ------------------------------------------------------------------------------
+   SEÇÃO BENEFÍCIOS (CARDS)
+   ------------------------------------------------------------------------------ */
+.beneficios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background-color: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid var(--borda);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    background-color: var(--bg-card-hover);
+    transform: translateY(-5px);
+    border-color: var(--azul-destaque);
+}
+
+.card h3 {
+    font-size: 1.25rem;
+    color: var(--azul-destaque);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.card p {
+    font-size: 0.95rem;
+    color: var(--texto-secundario);
+    line-height: 1.5;
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mineracore - Planejamento do Banco</title>
+    
+    <!-- Grid Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Personalizado para a Frente de Lavra / Banco -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calculos_banco_lavra.css') }}">
+</head>
+<body>
+
+<div class="container my-4" style="max-width: 1140px;">
+    
+    <!-- CABEÇALHO DA TELA -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-light">🏔️ Planejamento do Banco de Lavra</h2>
+        <p class="text-secondary">Cálculo de volume in situ, volume solto e tonelagem a partir da geometria do bloco.</p>
+    </div>
+
+    <form method="POST" action="/lavra">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <!-- CARD 1: IDENTIFICAÇÃO E PROPRIEDADES DO MATERIAL -->
+        <div class="card p-4 mb-4">
+            <h4 class="card-title mb-3">1. Identificação e Propriedades do Banco</h4>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="nome_frente" class="form-label">Nome da Frente / Banco:</label>
+                    <input type="text" id="nome_frente" name="nome_frente" class="form-control" maxlength="100" placeholder="Ex: Banco 1020 - Etapa 2" value="{{ dados.nome_frente if dados else '' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="tipo_material" class="form-label">Tipo de Material / Classificação:</label>
+                    <select id="tipo_material" name="tipo_material" class="form-control">
+                        <option value="Estéril" {% if dados and dados.tipo_material == 'Estéril' %}selected{% endif %}>Estéril</option>
+                        <option value="Minério Alta Lei" {% if dados and dados.tipo_material == 'Minério Alta Lei' %}selected{% endif %}>Minério Alta Lei</option>
+                        <option value="Minério Baixa Lei" {% if dados and dados.tipo_material == 'Minério Baixa Lei' %}selected{% endif %}>Minério Baixa Lei (Marginal)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="densidade_material" class="form-label">Densidade In Situ (t/m³):</label>
+                    <input type="number" step="0.01" min="0.01" id="densidade_material" name="densidade_material" class="form-control" value="{{ dados.densidade_material if dados else '2.70' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="fator_empolamento" class="form-label">Fator de Empolamento (%):</label>
+                    <input type="number" step="1" min="0" id="fator_empolamento" name="fator_empolamento" class="form-control" value="{{ dados.fator_empolamento if dados else '30' }}" placeholder="Ex: 30%" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: DIMENSÕES GEOMÉTRICAS DO BLOCO -->
+        <div class="card p-4 mb-4">
+            <h4 class="card-title mb-3">2. Dimensões Geométricas do Bloco (Geometria de Lavra)</h4>
+            
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="comprimento" class="form-label">Comprimento do Bloco (metros):</label>
+                    <input type="number" step="0.1" min="0" id="comprimento" name="comprimento" class="form-control" value="{{ dados.comprimento if dados else '100.0' }}" placeholder="Ex: 100m" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="largura" class="form-label">Largura do Bloco (metros):</label>
+                    <input type="number" step="0.1" min="0" id="largura" name="largura" class="form-control" value="{{ dados.largura if dados else '50.0' }}" placeholder="Ex: 50m" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="altura_banco" class="form-label">Altura do Banco (metros):</label>
+                    <input type="number" step="0.5" min="0" id="altura_banco" name="altura_banco" class="form-control" value="{{ dados.altura_banco if dados else '12.0' }}" placeholder="Ex: 12m" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÃO DE AÇÃO -->
+        <button type="submit" class="btn btn-success btn-lg w-100 py-3 mb-4 fw-bold text-uppercase">
+            Calcular Volume e Processar Banco
+        </button>
+
+    </form>
+
+    <!-- PAINEL DE RESULTADOS CALCULADOS (EXIBE APÓS CLICAR EM CALCULAR) -->
+    {% if dados %}
+    <div class="card p-4 mb-5 border-success">
+        <h4 class="card-title text-success mb-3">📊 Resultados do Bloco Processado</h4>
+        <div class="row text-center g-3 mb-4">
+            <div class="col-md-4">
+                <div class="p-3 bg-dark rounded">
+                    <span class="text-secondary d-block fs-6">Volume In Situ (m³)</span>
+                    <strong class="text-light fs-4">{{ dados.volume_situ_formatado }} m³</strong>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-dark rounded">
+                    <span class="text-secondary d-block fs-6">Tonelagem Total (t)</span>
+                    <strong class="text-warning fs-4">{{ dados.tonelagem_formatada }} t</strong>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-dark rounded">
+                    <span class="text-secondary d-block fs-6">Volume Solto (m³)</span>
+                    <strong class="text-info fs-4">{{ dados.volume_solto_formatado }} m³</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÕES DE AÇÕES PÓS-PROCESSAMENTO -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <a href="/operacao" class="btn btn-primary btn-lg w-100 fw-bold">
+                    🚜 Dimensionar Equipamento de Carga
+                </a>
+            </div>
+            <div class="col-md-6">
+                <button type="button" onclick="window.print()" class="btn btn-outline-light btn-lg w-100 fw-bold">
+                    📄 Imprimir / Salvar Relatório PDF
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

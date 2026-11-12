@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mineracore - Dimensionamento de Caminhões</title>
+    
+    <!-- Grid Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Exclusivo do Módulo de Transporte (Caminhões) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calculos_caminhoes.css') }}">
+</head>
+<body>
+
+<div class="container my-4" style="max-width: 1140px;">
+    
+    <!-- CABEÇALHO DA TELA -->
+    <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+        <div>
+            <h2 class="fw-bold text-light">🚛 Dimensionamento do Transporte (Caminhões)</h2>
+            <p class="text-secondary mb-0">Cálculo da frota ideal de transporte e Fator de Acoplamento (Match Factor).</p>
+        </div>
+        <a href="/voltar_dashboard" class="btn btn-outline-secondary">Voltar ao Dashboard</a>
+    </div>
+
+    <!-- VALIDAÇÃO DA SESSÃO DO MÓDULO ANTERIOR (ESCAVADEIRA / CARGA) -->
+    {% if not session.get('dados_carga') %}
+    <!-- ALERTA SE NÃO HOUVER DADOS DE CARGA -->
+    <div class="alert alert-warning border-warning d-flex align-items-center justify-content-between p-3 mb-4 bg-dark text-warning d-print-none" role="alert">
+        <div>
+            ⚠️ <strong>Atenção:</strong> Nenhum Equipamento de Carga foi dimensionado ainda! Calcule primeiro a escavadeira para obter a produtividade e o tempo de ciclo.
+        </div>
+        <a href="/operacao" class="btn btn-warning text-dark fw-bold btn-sm">Ir para Operação de Carga</a>
+    </div>
+    {% else %}
+    <!-- RESUMO DOS DADOS HERDADOS DA SESSÃO (BANCO + ESCAVADEIRA) -->
+    <div class="card p-3 mb-4 bg-dark text-light border-secondary d-print-none">
+        <div class="row align-items-center text-center text-md-start g-2">
+            <div class="col-md-3">
+                <small class="text-secondary d-block">Banco / Frente</small>
+                <strong>{{ session['dados_banco'].get('nome_frente', 'N/A') if session.get('dados_banco') else 'N/A' }}</strong>
+            </div>
+            <div class="col-md-3">
+                <small class="text-secondary d-block">Equipamento de Carga</small>
+                <span class="badge bg-info text-dark">{{ session['dados_carga'].get('modelo_escavadeira', 'N/A') }}</span>
+            </div>
+            <div class="col-md-3">
+                <small class="text-secondary d-block">Produtividade da Escavadeira</small>
+                <strong class="text-info">{{ session['dados_carga'].get('produtividade_t_h_formatada', '0,00') }} t/h</strong>
+            </div>
+            <div class="col-md-3">
+                <small class="text-secondary d-block">Ciclo Escavadeira Corrigido</small>
+                <strong class="text-warning">{{ session['dados_carga'].get('tempo_ciclo_corrigido', '0,00') }} s</strong>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- FORMULÁRIO DE ENTRADA DE DADOS DE TRANSPORTE -->
+    <form method="POST" action="/dimensionamento_caminhoes" class="d-print-none">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <!-- CARD 1: ESPECIFICAÇÕES DO CAMINHÃO -->
+        <div class="card p-4 mb-4">
+            <h4 class="card-title mb-3">1. Especificações do Caminhão de Transporte</h4>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="modelo_caminhao" class="form-label">Modelo / Identificação do Caminhão:</label>
+                    <input type="text" id="modelo_caminhao" name="modelo_caminhao" class="form-control" maxlength="100" placeholder="Ex: Caterpillar 777F" value="{{ dados.modelo_caminhao if dados else 'Caterpillar 777F' }}" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="capacidade_caminhao_t" class="form-label">Capacidade Útil da Caçamba (Toneladas):</label>
+                    <input type="number" step="0.1" min="1" id="capacidade_caminhao_t" name="capacidade_caminhao_t" class="form-control" placeholder="Ex: 100.0" value="{{ dados.capacidade_caminhao_t if dados else '100.0' }}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: DISTÂNCIAS E VELOCIDADES DE TRANSPORTE -->
+        <div class="card p-4 mb-4">
+            <h4 class="card-title mb-3">2. Distâncias de Percurso e Velocidades Médias</h4>
+            
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="distancia_ida_km" class="form-label">Distância de Ida - Carregado (km):</label>
+                    <input type="number" step="0.1" min="0" id="distancia_ida_km" name="distancia_ida_km" class="form-control" placeholder="Ex: 2.5" value="{{ dados.distancia_ida_km if dados else '2.5' }}" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="distancia_volta_km" class="form-label">Distância de Volta - Vazio (km):</label>
+                    <input type="number" step="0.1" min="0" id="distancia_volta_km" name="distancia_volta_km" class="form-control" placeholder="Ex: 2.5" value="{{ dados.distancia_volta_km if dados else '2.5' }}" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="vel_carregado_kmh" class="form-label">Velocidade Média Carregado (km/h):</label>
+                    <input type="number" step="1" min="1" id="vel_carregado_kmh" name="vel_carregado_kmh" class="form-control" placeholder="Ex: 22" value="{{ dados.vel_carregado_kmh if dados else '22' }}" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="vel_vazio_kmh" class="form-label">Velocidade Média Vazio (km/h):</label>
+                    <input type="number" step="1" min="1" id="vel_vazio_kmh" name="vel_vazio_kmh" class="form-control" placeholder="Ex: 35" value="{{ dados.vel_vazio_kmh if dados else '35' }}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3: TEMPOS FIXOS OPERACIONAIS DE TRANSPORTE -->
+        <div class="card p-4 mb-4">
+            <h4 class="card-title mb-3">3. Tempos Fixos de Manobra e Descarregamento</h4>
+            
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="tempo_manobra_praca_min" class="form-label">Manobra / Posicionamento na Praça (min):</label>
+                    <input type="number" step="0.1" min="0" id="tempo_manobra_praca_min" name="tempo_manobra_praca_min" class="form-control" placeholder="Ex: 1.0" value="{{ dados.tempo_manobra_praca_min if dados else '1.0' }}" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="tempo_basculamento_min" class="form-label">Tempo de Basculamento / Bota-fora (min):</label>
+                    <input type="number" step="0.1" min="0" id="tempo_basculamento_min" name="tempo_basculamento_min" class="form-control" placeholder="Ex: 1.5" value="{{ dados.tempo_basculamento_min if dados else '1.5' }}" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="eficiencia_transporte" class="form-label">Eficiência Operacional do Transporte (%):</label>
+                    <input type="number" step="1" min="1" max="100" id="eficiencia_transporte" name="eficiencia_transporte" class="form-control" placeholder="Ex: 85" value="{{ dados.eficiencia_transporte if dados else '85' }}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÃO DE SUBMISSÃO (BLOQUEIA SE NÃO HOUVER DADOS DE CARGA) -->
+        {% if session.get('dados_carga') %}
+            <button type="submit" class="btn btn-success btn-lg w-100 py-3 mb-4 fw-bold text-uppercase">
+                Calcular Dimensionamento da Frota de Caminhões
+            </button>
+        {% else %}
+            <button type="button" class="btn btn-secondary btn-lg w-100 py-3 mb-4 fw-bold text-uppercase" disabled>
+                🔒 Dimensione a Escavadeira Primeiro para Habilitar o Transporte
+            </button>
+        {% endif %}
+
+    </form>
+
+    <!-- RELATÓRIO DE RESULTADOS DO TRANSPORTE (APARECE APÓS O CÁLCULO) -->
+    {% if dados %}
+    <div class="card p-4 mb-5 border-success shadow-lg">
+        
+        <!-- CABEÇALHO DO RELATÓRIO -->
+        <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom border-secondary">
+            <div>
+                <h3 class="text-success fw-bold m-0">📄 Relatório Técnico de Acoplamento Carga-Transporte</h3>
+                <small class="text-secondary">Sistema Mineracore &bull; Dimensionamento de Frota e Fator de Acoplamento (Match Factor)</small>
+            </div>
+            <button onclick="window.print()" class="btn btn-outline-light btn-sm d-print-none">
+                🖨️ Imprimir / Salvar PDF
+            </button>
+        </div>
+
+        <!-- SEÇÃO A: PARÂMETROS OPERACIONAIS DE TRANSPORTE -->
+        <div class="mb-4">
+            <h5 class="text-light fw-bold mb-3">A. Premissas de Transporte Informadas</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-bordered align-middle mb-0">
+                    <tbody>
+                        <tr>
+                            <td class="text-secondary w-25">Modelo Caminhão:</td>
+                            <td class="fw-bold text-light">{{ dados.modelo_caminhao }}</td>
+                            <td class="text-secondary w-25">Capacidade Útil Mássica:</td>
+                            <td class="fw-bold text-light">{{ dados.capacidade_caminhao_t }} t</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary">Volume Útil da Caçamba:</td>
+                            <td class="fw-bold text-info">{{ dados.volume_cacamba_m3_formatado }} m³ solto</td>
+                            <td class="text-secondary">Conchadas por Caminhão:</td>
+                            <td class="fw-bold text-info">{{ dados.passadas }} passadas ({{ dados.carga_real_caminhao_t }} t)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary">Distância Ida (Carregado):</td>
+                            <td class="fw-bold text-light">{{ dados.distancia_ida_km }} km (Vel: {{ dados.vel_carregado_kmh }} km/h)</td>
+                            <td class="text-secondary">Distância Volta (Vazio):</td>
+                            <td class="fw-bold text-light">{{ dados.distancia_volta_km }} km (Vel: {{ dados.vel_vazio_kmh }} km/h)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary">Tempo de Carga na Praça:</td>
+                            <td class="fw-bold text-light">{{ dados.tempo_carga_min }} min</td>
+                            <td class="text-secondary">Tempo Total de Ciclo Caminhão:</td>
+                            <td class="fw-bold text-light">{{ dados.tempo_ciclo_caminhao_min }} min</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SEÇÃO B: DIMENSIONAMENTO DA FROTA E RESUMO EXPLICATIVO -->
+        <div>
+            <h5 class="text-light fw-bold mb-3">B. Dimensionamento da Frota e Desempenho Operacional</h5>
+            <div class="row text-center g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="p-3 bg-dark rounded border border-secondary">
+                        <span class="text-secondary d-block fs-6">Número Teórico</span>
+                        <strong class="text-info fs-3">{{ dados.numero_caminhoes_teorico }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-dark rounded border border-success">
+                        <span class="text-secondary d-block fs-6">Frota Ideal Sem Fila</span>
+                        <strong class="text-success fs-2">{{ dados.caminhoes_sem_fila }} Caminhões</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-dark rounded border border-warning">
+                        <span class="text-secondary d-block fs-6">100% Escavadeira</span>
+                        <strong class="text-warning fs-2">{{ dados.caminhoes_escavadeira_100 }} Caminhões</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-dark rounded border border-info">
+                        <span class="text-secondary d-block fs-6">Ritmo de Carregamento</span>
+                        <strong class="text-info fs-3">{{ dados.caminhoes_por_hora_real }} Cam/h</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTA TÉCNICA DE CONCLUSÃO DE ENGENHARIA -->
+            <div class="p-3 bg-dark rounded border border-secondary text-light">
+                📌 <strong>Conclusão Operacional:</strong> A escavadeira dimensionada consegue carregar até <strong>{{ dados.caminhoes_por_hora_real }} caminhões por hora</strong>. Com uma frota alocada de <strong>{{ dados.caminhoes_sem_fila }} caminhões {{ dados.modelo_caminhao }}</strong>, a praça opera de forma contínua com <strong>Match Factor ideal sem formação de filas</strong>.
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- SCRIPT DO BOOTSTRAP -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,634 @@
+/* ==========================================================================
+   ESTILOS GERAIS E ESTRUTURA BASE (MINERACORE)
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #0b1120;
+    color: #e2e8f0;
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+}
+
+header {
+    max-width: 1400px;
+    margin: 0 auto 20px auto;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #1e293b;
+}
+
+header h1 {
+    color: #38bdf8;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+main {
+    width: 100%;
+}
+
+.container-form,
+.relatorio-container {
+    background-color: #1e293b;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.container-form h2,
+.relatorio-container h2 {
+    color: #f8fafc;
+    margin-bottom: 20px;
+    font-size: 1.35rem;
+    font-weight: 600;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 10px;
+}
+
+/* ==========================================================================
+   FORMULÁRIO DE ENTRADA DE DADOS
+   ========================================================================== */
+form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Ocupação de Largura Completa no Formulário */
+form fieldset:nth-child(1),
+form fieldset:nth-child(5),
+form fieldset:nth-child(6),
+.btn-calcular {
+    grid-column: span 2;
+}
+
+fieldset {
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #0f172a;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 20px;
+}
+
+fieldset:hover {
+    border-color: #475569;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+legend {
+    color: #38bdf8;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0 8px;
+    background-color: #0f172a;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #cbd5e1;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input, 
+.form-group select {
+    width: 100%;
+    padding: 9px 12px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #f8fafc;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    background-color: #0f172a;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+.margin-top-sm {
+    margin-top: 10px;
+}
+
+.sub-legend {
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 16px;
+    margin-bottom: 4px;
+}
+
+.info-text {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+}
+
+/* Grid de Paradas Operacionais */
+.paradas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.parada-item label {
+    display: block;
+    margin-bottom: 4px;
+    color: #cbd5e1;
+    font-size: 0.82rem;
+}
+
+.parada-item input {
+    width: 100%;
+    padding: 8px 10px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #f8fafc;
+    font-size: 0.9rem;
+}
+
+.parada-item input:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* Grid de Entrada dos Meses (Chuva e Manutenção) */
+.form-row-meses {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.mes-input {
+    background-color: #1e293b;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    text-align: center;
+    transition: border-color 0.2s ease;
+}
+
+.mes-input:hover {
+    border-color: #38bdf8;
+}
+
+.mes-input label {
+    display: block;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.mes-input input {
+    width: 100%;
+    padding: 5px;
+    background-color: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 4px;
+    color: #38bdf8;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.mes-input input:focus {
+    outline: none;
+    border-color: #38bdf8;
+}
+
+/* ==========================================================================
+   ELEMENTOS VISUAIS DO RELATÓRIO
+   ========================================================================== */
+
+/* Cards de Logística e Ciclo */
+.logistica-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.card-info {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-info .label {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.card-info .val {
+    color: #f8fafc;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.destaque-ciclo {
+    background-color: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.destaque-ciclo .label {
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.destaque-ciclo .val-ciclo {
+    color: #38bdf8;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.destaque-ciclo .val-ciclo small {
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+/* Cards de KPIs de Produtividade */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.card-stat {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+}
+
+.card-stat .title {
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.card-stat .value {
+    color: #38bdf8;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.card-stat .unit {
+    color: #64748b;
+    font-size: 0.82rem;
+    margin-top: 2px;
+}
+
+.val-chuva { color: #60a5fa !important; }
+.val-maint { color: #f87171 !important; }
+
+/* Tabela de Distribuição Mensal */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+table.tabela-distribuicao {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #0f172a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table.tabela-distribuicao th {
+    background-color: #1e293b;
+    color: #38bdf8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 12px 16px;
+    border-bottom: 2px solid #334155;
+}
+
+table.tabela-distribuicao td {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid #1e293b;
+}
+
+table.tabela-distribuicao tr:hover td {
+    background-color: #1e293b;
+}
+
+.txt-chuva { color: #60a5fa; }
+.txt-maint { color: #f87171; }
+.txt-uteis { color: #38bdf8; }
+
+/* ==========================================================================
+   BOTÕES DE AÇÃO E BOTÕES DO FORMULÁRIO
+   ========================================================================== */
+.btn-calcular {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    margin-top: 10px;
+}
+
+.btn-calcular:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+    transform: translateY(-1px);
+}
+
+.btn-voltar {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #334155;
+    color: #f8fafc;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-voltar:hover {
+    background-color: #475569;
+}
+
+/* ==========================================================================
+   ABAS, METODOLOGIA, NAVEGAÇÃO E IMPRESSÃO
+   ========================================================================== */
+.header-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #334155;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.abas-navegacao {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-aba {
+    background-color: #0f172a;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    padding: 10px 18px;
+    border-radius: 8px 8px 0 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-aba:hover {
+    color: #f8fafc;
+    border-color: #475569;
+}
+
+.btn-aba.active {
+    background-color: #1e293b;
+    color: #38bdf8;
+    border-color: #38bdf8;
+    border-bottom: 2px solid #1e293b;
+    margin-bottom: -2px;
+}
+
+.conteudo-aba {
+    display: none;
+}
+
+.conteudo-aba.active {
+    display: block;
+}
+
+.btn-imprimir {
+    background-color: #0284c7;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-imprimir:hover {
+    background-color: #0369a1;
+}
+
+.bloco-metodologia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 15px;
+}
+
+.item-metodologia {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.item-metodologia h3 {
+    color: #38bdf8;
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+}
+
+.item-metodologia p {
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    margin-bottom: 12px;
+}
+
+.item-metodologia code {
+    display: block;
+    background-color: #1e293b;
+    color: #38bdf8;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    border-left: 3px solid #0284c7;
+}
+
+.rodape-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #334155;
+}
+
+.btn-proximo {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+.btn-proximo:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE E ADAPTAÇÃO DE TELAS
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .form-row-meses {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .logistica-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+    
+    form fieldset:nth-child(1),
+    form fieldset:nth-child(5),
+    form fieldset:nth-child(6),
+    .btn-calcular {
+        grid-column: span 1;
+    }
+    
+    .form-row-meses {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 550px) {
+    .logistica-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row-meses {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ==========================================================================
+   CONFIGURAÇÃO DE IMPRESSÃO (PDF / PAPEL)
+   ========================================================================== */
+@media print {
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .relatorio-container {
+        background-color: #ffffff !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    fieldset {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #000000 !important;
+        page-break-inside: avoid;
+    }
+
+    legend, h2, .card-stat .title, .card-info .label {
+        color: #0f172a !important;
+    }
+
+    .card-stat, .card-info, table.tabela-distribuicao {
+        background-color: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    table.tabela-distribuicao th {
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+
+    table.tabela-distribuicao td {
+        color: #0f172a !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+
+    .val-chuva, .txt-chuva { color: #1d4ed8 !important; }
+    .val-maint, .txt-maint { color: #b91c1c !important; }
+    .txt-uteis, .card-stat .value, .destaque-ciclo .val-ciclo { color: #0284c7 !important; }
+}
