@@ -21,7 +21,7 @@
         <p class="text-secondary">Cálculo de volume in situ, volume solto e tonelagem a partir da geometria do bloco.</p>
     </div>
 
-    <form method="POST" action="/lavra">
+    <form method="POST" action="/lavra" autocomplete="off">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <!-- CARD 1: IDENTIFICAÇÃO E PROPRIEDADES DO MATERIAL -->
@@ -46,11 +46,11 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label for="densidade_material" class="form-label">Densidade In Situ (t/m³):</label>
-                    <input type="number" step="0.01" min="0.01" id="densidade_material" name="densidade_material" class="form-control" value="{{ dados.densidade_material if dados else '2.70' }}" required>
+                    <input type="number" step="0.01" min="0.01" id="densidade_material" name="densidade_material" class="form-control" value="{{ dados.densidade_material if dados else '' }}" placeholder="Ex: 2.70" required>
                 </div>
                 <div class="col-md-6">
                     <label for="fator_empolamento" class="form-label">Fator de Empolamento (%):</label>
-                    <input type="number" step="1" min="0" id="fator_empolamento" name="fator_empolamento" class="form-control" value="{{ dados.fator_empolamento if dados else '30' }}" placeholder="Ex: 30%" required>
+                    <input type="number" step="1" min="0" id="fator_empolamento" name="fator_empolamento" class="form-control" value="{{ dados.fator_empolamento if dados else '' }}" placeholder="Ex: 30" required>
                 </div>
             </div>
         </div>
@@ -62,15 +62,15 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label for="comprimento" class="form-label">Comprimento do Bloco (metros):</label>
-                    <input type="number" step="0.1" min="0" id="comprimento" name="comprimento" class="form-control" value="{{ dados.comprimento if dados else '100.0' }}" placeholder="Ex: 100m" required>
+                    <input type="number" step="0.1" min="0" id="comprimento" name="comprimento" class="form-control" value="{{ dados.comprimento if dados else '' }}" placeholder="Ex: 100.0" required>
                 </div>
                 <div class="col-md-4">
                     <label for="largura" class="form-label">Largura do Bloco (metros):</label>
-                    <input type="number" step="0.1" min="0" id="largura" name="largura" class="form-control" value="{{ dados.largura if dados else '50.0' }}" placeholder="Ex: 50m" required>
+                    <input type="number" step="0.1" min="0" id="largura" name="largura" class="form-control" value="{{ dados.largura if dados else '' }}" placeholder="Ex: 50.0" required>
                 </div>
                 <div class="col-md-4">
                     <label for="altura_banco" class="form-label">Altura do Banco (metros):</label>
-                    <input type="number" step="0.5" min="0" id="altura_banco" name="altura_banco" class="form-control" value="{{ dados.altura_banco if dados else '12.0' }}" placeholder="Ex: 12m" required>
+                    <input type="number" step="0.5" min="0" id="altura_banco" name="altura_banco" class="form-control" value="{{ dados.altura_banco if dados else '' }}" placeholder="Ex: 12.0" required>
                 </div>
             </div>
         </div>
@@ -124,6 +124,17 @@
     {% endif %}
 
 </div>
+
+<!-- Script para gerenciar o cache de histórico do navegador (botão Voltar) -->
+<script>
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            document.querySelectorAll('form').forEach(function (form) {
+                form.reset();
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -58,7 +58,7 @@
     {% endif %}
 
     <!-- FORMULÁRIO DE ENTRADA DE DADOS DE TRANSPORTE -->
-    <form method="POST" action="/dimensionamento_caminhoes" class="d-print-none">
+    <form method="POST" action="/dimensionamento_caminhoes" class="d-print-none" autocomplete="off">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <!-- CARD 1: ESPECIFICAÇÕES DO CAMINHÃO -->
@@ -68,12 +68,12 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label for="modelo_caminhao" class="form-label">Modelo / Identificação do Caminhão:</label>
-                    <input type="text" id="modelo_caminhao" name="modelo_caminhao" class="form-control" maxlength="100" placeholder="Ex: Caterpillar 777F" value="{{ dados.modelo_caminhao if dados else 'Caterpillar 777F' }}" required>
+                    <input type="text" id="modelo_caminhao" name="modelo_caminhao" class="form-control" maxlength="100" placeholder="Ex: Caterpillar 777F" value="{{ dados.modelo_caminhao if dados else '' }}" required>
                 </div>
                 
                 <div class="col-md-6">
                     <label for="capacidade_caminhao_t" class="form-label">Capacidade Útil da Caçamba (Toneladas):</label>
-                    <input type="number" step="0.1" min="1" id="capacidade_caminhao_t" name="capacidade_caminhao_t" class="form-control" placeholder="Ex: 100.0" value="{{ dados.capacidade_caminhao_t if dados else '100.0' }}" required>
+                    <input type="number" step="0.1" min="1" id="capacidade_caminhao_t" name="capacidade_caminhao_t" class="form-control" placeholder="Ex: 100.0" value="{{ dados.capacidade_caminhao_t if dados else '' }}" required>
                 </div>
             </div>
         </div>
@@ -85,22 +85,22 @@
             <div class="row g-3">
                 <div class="col-md-3">
                     <label for="distancia_ida_km" class="form-label">Distância de Ida - Carregado (km):</label>
-                    <input type="number" step="0.1" min="0" id="distancia_ida_km" name="distancia_ida_km" class="form-control" placeholder="Ex: 2.5" value="{{ dados.distancia_ida_km if dados else '2.5' }}" required>
+                    <input type="number" step="0.1" min="0" id="distancia_ida_km" name="distancia_ida_km" class="form-control" placeholder="Ex: 2.5" value="{{ dados.distancia_ida_km if dados else '' }}" required>
                 </div>
 
                 <div class="col-md-3">
                     <label for="distancia_volta_km" class="form-label">Distância de Volta - Vazio (km):</label>
-                    <input type="number" step="0.1" min="0" id="distancia_volta_km" name="distancia_volta_km" class="form-control" placeholder="Ex: 2.5" value="{{ dados.distancia_volta_km if dados else '2.5' }}" required>
+                    <input type="number" step="0.1" min="0" id="distancia_volta_km" name="distancia_volta_km" class="form-control" placeholder="Ex: 2.5" value="{{ dados.distancia_volta_km if dados else '' }}" required>
                 </div>
 
                 <div class="col-md-3">
                     <label for="vel_carregado_kmh" class="form-label">Velocidade Média Carregado (km/h):</label>
-                    <input type="number" step="1" min="1" id="vel_carregado_kmh" name="vel_carregado_kmh" class="form-control" placeholder="Ex: 22" value="{{ dados.vel_carregado_kmh if dados else '22' }}" required>
+                    <input type="number" step="1" min="1" id="vel_carregado_kmh" name="vel_carregado_kmh" class="form-control" placeholder="Ex: 22" value="{{ dados.vel_carregado_kmh if dados else '' }}" required>
                 </div>
 
                 <div class="col-md-3">
                     <label for="vel_vazio_kmh" class="form-label">Velocidade Média Vazio (km/h):</label>
-                    <input type="number" step="1" min="1" id="vel_vazio_kmh" name="vel_vazio_kmh" class="form-control" placeholder="Ex: 35" value="{{ dados.vel_vazio_kmh if dados else '35' }}" required>
+                    <input type="number" step="1" min="1" id="vel_vazio_kmh" name="vel_vazio_kmh" class="form-control" placeholder="Ex: 35" value="{{ dados.vel_vazio_kmh if dados else '' }}" required>
                 </div>
             </div>
         </div>
@@ -112,17 +112,17 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label for="tempo_manobra_praca_min" class="form-label">Manobra / Posicionamento na Praça (min):</label>
-                    <input type="number" step="0.1" min="0" id="tempo_manobra_praca_min" name="tempo_manobra_praca_min" class="form-control" placeholder="Ex: 1.0" value="{{ dados.tempo_manobra_praca_min if dados else '1.0' }}" required>
+                    <input type="number" step="0.1" min="0" id="tempo_manobra_praca_min" name="tempo_manobra_praca_min" class="form-control" placeholder="Ex: 1.0" value="{{ dados.tempo_manobra_praca_min if dados else '' }}" required>
                 </div>
 
                 <div class="col-md-4">
                     <label for="tempo_basculamento_min" class="form-label">Tempo de Basculamento / Bota-fora (min):</label>
-                    <input type="number" step="0.1" min="0" id="tempo_basculamento_min" name="tempo_basculamento_min" class="form-control" placeholder="Ex: 1.5" value="{{ dados.tempo_basculamento_min if dados else '1.5' }}" required>
+                    <input type="number" step="0.1" min="0" id="tempo_basculamento_min" name="tempo_basculamento_min" class="form-control" placeholder="Ex: 1.5" value="{{ dados.tempo_basculamento_min if dados else '' }}" required>
                 </div>
 
                 <div class="col-md-4">
                     <label for="eficiencia_transporte" class="form-label">Eficiência Operacional do Transporte (%):</label>
-                    <input type="number" step="1" min="1" max="100" id="eficiencia_transporte" name="eficiencia_transporte" class="form-control" placeholder="Ex: 85" value="{{ dados.eficiencia_transporte if dados else '85' }}" required>
+                    <input type="number" step="1" min="1" max="100" id="eficiencia_transporte" name="eficiencia_transporte" class="form-control" placeholder="Ex: 85" value="{{ dados.eficiencia_transporte if dados else '' }}" required>
                 </div>
             </div>
         </div>
@@ -233,6 +233,17 @@
 
 <!-- SCRIPT DO BOOTSTRAP -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para gerenciar o cache de histórico do navegador (botão Voltar) -->
+<script>
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            document.querySelectorAll('form').forEach(function (form) {
+                form.reset();
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
