@@ -31,11 +31,21 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Registro dos módulos
+# Registro dos módulos (Blueprints)
 app.register_blueprint(lavra_bp)
 app.register_blueprint(operacao_bp)
 app.register_blueprint(caminhoes_bp)
 app.register_blueprint(planejamento_mensal_app)
+
+# ---------------------------------------------------------
+# Controle de Cache Profissional (Impede dados presos ao voltar)
+# ---------------------------------------------------------
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route("/")
 def home():
