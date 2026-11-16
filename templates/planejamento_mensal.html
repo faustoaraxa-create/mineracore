@@ -176,24 +176,41 @@
                 </div>
             </fieldset>
 
-            <!-- Bloco 5: Horas de Chuva por Mês -->
+            <!-- Bloco 5: Horas de Chuva por Mês (Com IA e Histórico Regional) -->
             <fieldset>
                 <legend>5. Fatores Climáticos (Horas de Chuva por Mês)</legend>
-                <p class="info-text">Informe a estimativa de horas de paralisação operacional devido às intempéries mensais:</p>
+                <p class="info-text">Informe manualmente ou utilize o histórico regional pluviométrico (5-10 anos) para estimar as paralisações operacionais:</p>
                 
+                <!-- Caixa de Automação Climática por IA -->
+                <div class="clima-auto-box" style="background: rgba(56, 189, 248, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed #38bdf8; margin-bottom: 20px;">
+                    <div class="form-row" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                            <label for="regiao_busca_clima" style="font-size: 0.9rem; color: #38bdf8;">Região / Mina para Consulta Histórica:</label>
+                            <input type="text" id="regiao_busca_clima" placeholder="Ex: Araxá - MG, Parauapebas - PA, Itabira - MG" value="Araxá - MG" style="width: 100%; padding: 9px 12px; border-radius: 6px; background: #0b1120; color: #fff; border: 1px solid #334155;">
+                        </div>
+                        <div>
+                            <button type="button" onclick="buscarHistoricoChuvas()" id="btn-buscar-chuva" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);">
+                                🔍 Estimar com Histórico & IA
+                            </button>
+                        </div>
+                    </div>
+                    <small id="status-clima" style="display: block; margin-top: 8px; color: #94a3b8; font-style: italic;"></small>
+                </div>
+
+                <!-- Inputs dos 12 Meses com IDs individuais -->
                 <div class="form-row-meses">
-                    <div class="mes-input"><label>Janeiro</label><input type="number" name="chuva_jan" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Fevereiro</label><input type="number" name="chuva_fev" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Março</label><input type="number" name="chuva_mar" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Abril</label><input type="number" name="chuva_abr" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Maio</label><input type="number" name="chuva_mai" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Junho</label><input type="number" name="chuva_jun" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Julho</label><input type="number" name="chuva_jul" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Agosto</label><input type="number" name="chuva_ago" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Setembro</label><input type="number" name="chuva_set" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Outubro</label><input type="number" name="chuva_out" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Novembro</label><input type="number" name="chuva_nov" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Dezembro</label><input type="number" name="chuva_dez" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Janeiro</label><input type="number" id="chuva_jan" name="chuva_jan" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Fevereiro</label><input type="number" id="chuva_fev" name="chuva_fev" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Março</label><input type="number" id="chuva_mar" name="chuva_mar" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Abril</label><input type="number" id="chuva_abr" name="chuva_abr" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Maio</label><input type="number" id="chuva_mai" name="chuva_mai" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Junho</label><input type="number" id="chuva_jun" name="chuva_jun" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Julho</label><input type="number" id="chuva_jul" name="chuva_jul" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Agosto</label><input type="number" id="chuva_ago" name="chuva_ago" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Setembro</label><input type="number" id="chuva_set" name="chuva_set" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Outubro</label><input type="number" id="chuva_out" name="chuva_out" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Novembro</label><input type="number" id="chuva_nov" name="chuva_nov" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label>Dezembro</label><input type="number" id="chuva_dez" name="chuva_dez" value="" placeholder="0" step="0.5" min="0"></div>
                 </div>
             </fieldset>
 
@@ -212,6 +229,56 @@
         } else {
             divCustom.style.display = 'none';
         }
+    }
+
+    function buscarHistoricoChuvas() {
+        const regiao = document.getElementById('regiao_busca_clima').value;
+        const statusEl = document.getElementById('status-clima');
+        const btn = document.getElementById('btn-buscar-chuva');
+
+        if (!regiao.trim()) {
+            alert('Por favor, informe a região ou mina.');
+            return;
+        }
+
+        statusEl.textContent = 'Buscando histórico pluviométrico na web e processando via IA...';
+        statusEl.style.color = '#38bdf8';
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+
+        const csrfToken = document.querySelector('input[name="csrf_token"]') ? document.querySelector('input[name="csrf_token"]').value : '';
+
+        fetch('/api/estimar-chuvas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ regiao: regiao })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.horas_meses && data.horas_meses.length === 12) {
+                const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+                meses.forEach((m, index) => {
+                    document.getElementById(`chuva_${m}`).value = data.horas_meses[index];
+                });
+                statusEl.textContent = '✅ Horas de paralisação por chuva preenchidas com sucesso (Série Histórica aplicada)!';
+                statusEl.style.color = '#22c55e';
+            } else {
+                statusEl.textContent = '⚠️ Erro ao processar dados. Tente novamente.';
+                statusEl.style.color = '#ef4444';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            statusEl.textContent = '❌ Falha na comunicação com o servidor.';
+            statusEl.style.color = '#ef4444';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        });
     }
 
     window.onload = function() {

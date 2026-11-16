@@ -1,6 +1,10 @@
 /* ==============================================================================
    ESTILO GLOBAL E VARIÁVEIS DO MINERACORE (index.css)
    ============================================================================== */
+html {
+    scroll-behavior: smooth;
+}
+
 :root {
     --bg-principal: #0b0f19;
     --bg-card: #151c2c;
@@ -27,6 +31,69 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* ------------------------------------------------------------------------------
+   BARRA DE NAVEGAÇÃO SUPERIOR (NAVBAR)
+   ------------------------------------------------------------------------------ */
+.navbar {
+    width: 100%;
+    background-color: rgba(11, 15, 25, 0.95);
+    border-bottom: 1px solid var(--borda);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+}
+
+.nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--azul-destaque);
+    text-transform: uppercase;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--texto-secundario);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--azul-destaque);
+}
+
+.btn-nav-login {
+    background-color: var(--verde-sucesso);
+    color: #ffffff !important;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(34, 197, 94, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-nav-login:hover {
+    background-color: var(--verde-hover);
+    transform: translateY(-1px);
 }
 
 /* ------------------------------------------------------------------------------
@@ -65,7 +132,7 @@ main {
     margin: 40px auto;
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 40px;
     flex: 1;
 }
 
@@ -156,11 +223,42 @@ main {
 }
 
 /* ------------------------------------------------------------------------------
+   SEÇÃO: IMPORTÂNCIA DO DIMENSIONAMENTO DE FROTA
+   ------------------------------------------------------------------------------ */
+.importancia-frota {
+    background-color: var(--bg-card);
+    padding: 35px 40px;
+    border-radius: 12px;
+    border: 1px solid var(--borda);
+    border-left: 4px solid var(--verde-sucesso);
+    text-align: left;
+}
+
+.importancia-frota h3 {
+    font-size: 1.35rem;
+    color: var(--texto-principal);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.importancia-frota p {
+    font-size: 0.98rem;
+    color: var(--texto-secundario);
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.importancia-frota strong {
+    color: var(--azul-destaque);
+    font-weight: 600;
+}
+
+/* ------------------------------------------------------------------------------
    SEÇÃO SOBRE O SISTEMA (DETALHAMENTO TÉCNICO)
    ------------------------------------------------------------------------------ */
 .sobre-sistema {
     background-color: var(--bg-card);
-    padding: 30px 35px;
+    padding: 35px 40px;
     border-radius: 12px;
     border: 1px solid var(--borda);
     border-left: 4px solid var(--azul-destaque);
@@ -168,10 +266,10 @@ main {
 }
 
 .sobre-sistema h3 {
-    font-size: 1.2rem;
+    font-size: 1.35rem;
     color: var(--texto-principal);
-    margin-bottom: 10px;
-    font-weight: 600;
+    margin-bottom: 15px;
+    font-weight: 700;
 }
 
 .sobre-sistema p {

@@ -7,9 +7,24 @@
     <title>Mineracore — Inteligência Operacional na Mineração</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
-<body>
+<body id="inicio">
 
-    <header>
+    <!-- Barra de Navegação Superior (Navbar) -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-title">MINERACORE</span>
+            </div>
+            <div class="nav-links">
+                <a href="#inicio">Início</a>
+                <a href="#importancia">Importância da Frota</a>
+                <a href="#sobre">Sobre o Projeto</a>
+                <a href="/dashboard" class="btn-nav-login">Entrar</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-header">
         <h1>Mineracore</h1>
         <p>Inteligência e controle para operações de mineração</p>
     </header>
@@ -24,7 +39,9 @@
                 direto na rotina operacional.
             </p>
 
-            <a href="/dashboard" class="btn-entrar">Entrar no Sistema</a>
+            <div class="hero-actions">
+                <a href="/dashboard" class="btn-entrar">Acessar Calculadoras & Módulos</a>
+            </div>
         </section>
 
         <section class="beneficios">
@@ -44,10 +61,26 @@
             </div>
         </section>
 
-        <section class="sobre-sistema">
-            <h3>O que o Mineracore entrega na rotina da mina</h3>
+        <!-- Nova Seção: A Importância do Dimensionamento de Frota -->
+        <section id="importancia" class="importancia-frota">
+            <h3>O Custo-Benefício de uma Frota Bem Dimensionada</h3>
             <p>
-                Projetado para unir engenharia de produção e realidade operacional de lavra, o sistema automatiza o 
+                No ciclo de lavra a céu aberto, o desequilíbrio entre equipamentos de carga e frotas de transporte 
+                representa um ralo financeiro invisível. Pás e escavadeiras ociosas aguardando basculantes, ou filas 
+                intermináveis de caminhões fora de estrada queimando diesel no pátio, destroem a margem operacional.
+            </p>
+            <p>
+                O <strong>Mineracore</strong> aplica rigor de engenharia de produção para cruzar taxas de escavação, 
+                tempos de ciclo exatos, distâncias de transporte, fatores de empolamento (swell factor) e janelas de 
+                paradas operacionais (refeições, DDS, trocas de turno e manutenções). O resultado é o dimensionamento cirúrgico que 
+                garante a máxima produtividade com o menor custo por tonelada movida.
+            </p>
+        </section>
+
+        <section id="sobre" class="sobre-sistema">
+            <h3>A Origem e o Propósito do Mineracore</h3>
+            <p>
+                Projetado unindo a vivência prática nas frentes de lavra e a engenharia de produção, o sistema automatiza o 
                 <strong>cálculo de geometria de bancadas</strong>, <strong>volume in situ e solto</strong>, 
                 <strong>capacidade de equipamentos de carga</strong> e <strong>produtividade de frotas fora de estrada</strong>. 
                 Tudo em uma interface rápida, padronizada e pronta para apoiar supervisores, técnicos e engenheiros na tomada de decisão diária.

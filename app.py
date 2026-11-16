@@ -39,7 +39,7 @@ app.register_blueprint(caminhoes_bp)
 app.register_blueprint(planejamento_mensal_app)
 app.register_blueprint(maquinas_bp)
 
-# Isenta a API JSON do Handbook de verificação CSRF de formulário
+# Isenta APIs JSON de verificação CSRF de formulário tradicional (se necessário)
 csrf.exempt(maquinas_bp)
 
 # ---------------------------------------------------------

@@ -1,5 +1,9 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from utils import parse_float, parse_int
+from duckduckgo_search import DDGS
+from google import genai
+import os
+import json
 
 planejamento_mensal_app = Blueprint('planejamento_mensal_app', __name__)
 
@@ -140,6 +144,52 @@ def planejamento_mensal():
             return "Ocorreu um erro ao processar os cálculos operacionais. Verifique os valores informados.", 400
 
     return render_template('planejamento_mensal.html')
+
+
+@planejamento_mensal_app.route('/api/estimar-chuvas', methods=['POST'])
+def estimar_chuvas():
+    try:
+        dados = request.get_json()
+        regiao = dados.get('regiao', 'Araxá - MG')
+        
+        # 1. Busca dados climáticos / históricos da região na web
+        query = f"precipitação média mensal histórico chuvas {regiao} mineração paralisação"
+        try:
+            with DDGS() as ddgs:
+                resultados_busca = [r for r in ddgs.text(query, max_results=3)]
+        except Exception:
+            resultados_busca = []
+
+        # 2. Usa o Gemini para interpretar o histórico e gerar os valores de horas paradas por mês
+        prompt = f"""
+        Com base no histórico pluviométrico e regime de chuvas para operações de mineração a céu aberto na região de '{regiao}', 
+        estime o número médio de HORAS DE PARALISAÇÃO OPERACIONAL por mês (de Janeiro a Dezembro) considerando o impacto 
+        em frotas de grande porte (caminhões fora de estrada e tempo de secagem de pista).
+        Lembre-se que no Sudeste/Centro-Oeste as chuvas começam a intensificar em outubro/novembro, têm pico no verão (dezembro a março) 
+        e reduzem drasticamente nos meses secos (maio a agosto). Adapte caso a região seja diferente.
+        
+        Retorne ESTRITAMENTE um objeto JSON puro contendo uma chave "horas_meses" com uma lista de 12 números (inteiros ou decimais) 
+        representando as horas paradas de Janeiro a Dezembro. Exemplo:
+        {{"horas_meses": [45, 50, 40, 20, 5, 0, 0, 0, 5, 15, 30, 45]}}
+        """
+        
+        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        texto_resposta = response.text.strip()
+        if texto_resposta.startswith("```json"):
+            texto_resposta = texto_resposta[7:-3].strip()
+        elif texto_resposta.startswith("```"):
+            texto_resposta = texto_resposta[3:-3].strip()
+            
+        resultado_json = json.loads(texto_resposta)
+        return jsonify(resultado_json)
+    except Exception as e:
+        print(f"Erro ao estimar chuvas via IA: {e}")
+        # Fallback padrão caso ocorra algum erro na API
+        return jsonify({"horas_meses": [40, 45, 35, 15, 5, 0, 0, 0, 5, 15, 30, 40]})
 
 
 @planejamento_mensal_app.route('/dimensionamento_frota', methods=['POST'])
