@@ -19,12 +19,46 @@ body {
     align-items: center;
 }
 
+/* Cabeçalho com botão de voltar e título centralizado */
 header {
     width: 100%;
-    padding: 30px 20px;
-    text-align: center;
+    padding: 20px 20px 30px 20px;
     background-color: #111827;
     border-bottom: 1px solid #1f2937;
+}
+
+.topo-acoes {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto 12px auto;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-voltar-inicio {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #0b0f19;
+    color: #cbd5e1;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-voltar-inicio:hover {
+    background-color: #1f2937;
+    color: #ffffff;
+    border-color: #3b82f6;
+    transform: translateX(-2px);
+}
+
+.topo-titulo {
+    text-align: center;
 }
 
 header h1 {
@@ -42,10 +76,12 @@ header p {
     font-weight: 500;
 }
 
+/* Área principal empurra o rodapé para o fundo da tela */
 main {
     max-width: 1200px;
     width: 90%;
     margin: 40px auto;
+    flex: 1;
 }
 
 /* Grelha e Cartões dos Módulos */
@@ -60,6 +96,7 @@ main {
 }
 
 .card-modulo {
+    position: relative;
     background: #111827;
     border: 1px solid #1f2937;
     border-radius: 12px;
@@ -76,6 +113,25 @@ main {
     border-color: #3b82f6;
     box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
     background: #1f2937;
+}
+
+/* Destaque sutil no Card de Máquinas (Handbook IA) */
+.card-destaque {
+    border: 1px solid rgba(59, 130, 246, 0.45);
+}
+
+.badge-novo {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(37, 99, 235, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 20px;
 }
 
 .card-modulo .icone {
@@ -123,4 +179,42 @@ main {
 
 .card-modulo button:active {
     transform: scale(0.98);
+}
+
+/* Rodapé Institucional no Fundo da Página */
+.rodape-mineracore {
+    width: 100%;
+    margin-top: auto;
+    padding: 22px 20px;
+    background-color: #111827;
+    border-top: 1px solid #1f2937;
+    text-align: center;
+}
+
+.rodape-conteudo {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rodape-marca {
+    color: #9ca3af;
+    font-size: 0.88rem;
+}
+
+.rodape-marca strong {
+    color: #f8fafc;
+    letter-spacing: 0.5px;
+}
+
+.rodape-autor {
+    color: #6b7280;
+    font-size: 0.80rem;
+}
+
+.rodape-autor strong {
+    color: #38bdf8;
+    font-weight: 600;
 }

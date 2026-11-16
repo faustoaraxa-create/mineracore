@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Máquinas — MineraCore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/maquinas.css', v='2.0') }}">
+</head>
+<body>
+    <div class="mc-container">
+        <nav class="mc-topbar">
+            <a href="/dashboard" class="mc-back-link">← Voltar para o Dashboard</a>
+            <span class="mc-badge">PERFORMANCE HANDBOOK IA</span>
+        </nav>
+
+        <header class="mc-header">
+            <h1>Catálogo de Máquinas</h1>
+            <p>Selecione a categoria do equipamento para consultar as especificações técnicas oficiais</p>
+        </header>
+
+        <main>
+            <div class="mc-categories-grid">
+
+                <!-- CATEGORIA 1: Escavadeira -->
+                <div class="mc-category-card">
+                    <div>
+                        <div class="mc-card-top">
+                            <span class="mc-icon">🦾</span>
+                            <span class="mc-tag">CARGA & ESCAVAÇÃO</span>
+                        </div>
+                        <h2>Escavadeira</h2>
+                        <p>Escavadeiras hidráulicas sobre esteiras para lavra, abertura de frentes e carregamento.</p>
+                        <span class="mc-examples">Ex: Cat 320, Cat 336, Komatsu PC200, Hitachi EX2500</span>
+                    </div>
+                    <a href="/maquinas/escavadeira" class="mc-btn-card">Consultar Escavadeiras</a>
+                </div>
+
+                <!-- CATEGORIA 2: Pá Carregadeira -->
+                <div class="mc-category-card">
+                    <div>
+                        <div class="mc-card-top">
+                            <span class="mc-icon">🚜</span>
+                            <span class="mc-tag">CARREGAMENTO</span>
+                        </div>
+                        <h2>Pá Carregadeira</h2>
+                        <p>Carregadeiras de rodas para alimentação de britadores, retomada de pilhas e carregamento rápido.</p>
+                        <span class="mc-examples">Ex: Cat 966, Cat 988K, Volvo L120, Komatsu WA470</span>
+                    </div>
+                    <a href="/maquinas/pa-carregadeira" class="mc-btn-card">Consultar Carregadeiras</a>
+                </div>
+
+                <!-- CATEGORIA 3: Trator de Esteiras -->
+                <div class="mc-category-card">
+                    <div>
+                        <div class="mc-card-top">
+                            <span class="mc-icon">🚧</span>
+                            <span class="mc-tag">TERRAPLENAGEM</span>
+                        </div>
+                        <h2>Trator</h2>
+                        <p>Tratores de esteiras para decapeamento, empurre de material, manutenção de praças e pilhas de estéril.</p>
+                        <span class="mc-examples">Ex: Cat D6, Cat D8T, Cat D10T, Komatsu D155AX</span>
+                    </div>
+                    <a href="/maquinas/trator" class="mc-btn-card">Consultar Tratores</a>
+                </div>
+
+                <!-- CATEGORIA 4: Motoniveladora -->
+                <div class="mc-category-card">
+                    <div>
+                        <div class="mc-card-top">
+                            <span class="mc-icon">🛣️</span>
+                            <span class="mc-tag">INFRAESTRUTURA</span>
+                        </div>
+                        <h2>Motoniveladora</h2>
+                        <p>Nivelamento e manutenção de pistas de rolamento (acessos de mina), drenagem e acabamento de praças.</p>
+                        <span class="mc-examples">Ex: Cat 140, Cat 16M, John Deere 670G, Volvo G930</span>
+                    </div>
+                    <a href="/maquinas/motoniveladora" class="mc-btn-card">Consultar Motoniveladoras</a>
+                </div>
+
+                <!-- CATEGORIA 5: Retroescavadeira -->
+                <div class="mc-category-card">
+                    <div>
+                        <div class="mc-card-top">
+                            <span class="mc-icon">🏗️</span>
+                            <span class="mc-tag">APOIO OPERACIONAL</span>
+                        </div>
+                        <h2>Retroescavadeira</h2>
+                        <p>Equipamentos versáteis para abertura de valas, drenagem pluvial, apoio civil e serviços auxiliares.</p>
+                        <span class="mc-examples">Ex: Cat 416, JCB 3CX, Case 580N, Randon RK406</span>
+                    </div>
+                    <a href="/maquinas/retroescavadeira" class="mc-btn-card">Consultar Retroescavadeiras</a>
+                </div>
+
+            </div>
+        </main>
+
+        <footer style="text-align: center; margin-top: 48px; padding-top: 20px; border-top: 1px solid #1f2937; color: #6b7280; font-size: 0.85rem;">
+            <p style="margin: 0 0 4px; color: #9ca3af;"><strong>MINERACORE</strong> — Sistema de Engenharia e Planejamento de Lavra</p>
+            <p style="margin: 0;">Desenvolvido por <strong>Fausto Gonçalves dos Santos</strong> • Araxá - MG</p>
+        </footer>
+    </div>
+</body>
+</html>

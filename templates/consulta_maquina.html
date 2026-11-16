@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ info.titulo }} — MineraCore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/maquinas.css', v='2.0') }}">
+</head>
+<body>
+    <div class="mc-container">
+        <nav class="mc-topbar">
+            <a href="{{ url_for('maquinas.index_maquinas') }}" class="mc-back-link">
+                ← Voltar para Categorias
+            </a>
+            <span class="mc-badge">HANDBOOK DIGITAL IA</span>
+        </nav>
+
+        <header class="mc-header">
+            <h1>{{ info.icone }} {{ info.titulo }}</h1>
+            <p>{{ info.descricao }}</p>
+        </header>
+
+        <!-- Passo 1: Seleção de Fabricante / Marca -->
+        <section class="mc-catalogo-box">
+            <div class="mc-step-header">
+                <span class="mc-step-num">1</span>
+                <h2>Selecione o Fabricante / Marca</h2>
+            </div>
+            <div class="mc-marcas-grid" id="grid-marcas">
+                {% for marca in catalogo.keys() %}
+                <button type="button" class="mc-chip-marca" data-marca="{{ marca }}">
+                    {{ marca }}
+                </button>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Passo 2: Seleção de Modelo (Aparece ao clicar na marca) -->
+        <section class="mc-catalogo-box" id="box-modelos" style="display: none;">
+            <div class="mc-step-header">
+                <span class="mc-step-num">2</span>
+                <h2>Selecione o Modelo (<span id="nome-marca-selecionada"></span>)</h2>
+            </div>
+            <div class="mc-modelos-grid" id="grid-modelos"></div>
+        </section>
+
+        <!-- Busca Manual / Outro Modelo -->
+        <section class="mc-search-box">
+            <div class="mc-busca-livre-titulo">
+                Ou digite manualmente caso o modelo não esteja listado acima:
+            </div>
+            <form id="form-busca-maquina" class="mc-search-form">
+                <div class="mc-field">
+                    <label for="input-marca">Fabricante / Marca</label>
+                    <input type="text" id="input-marca" placeholder="{{ info.placeholder_marca }}" required>
+                </div>
+                <div class="mc-field">
+                    <label for="input-modelo">Modelo</label>
+                    <input type="text" id="input-modelo" placeholder="{{ info.placeholder_modelo }}" required>
+                </div>
+                <button type="submit" id="btn-buscar" class="mc-btn-primary">
+                    Consultar Especificações
+                </button>
+            </form>
+        </section>
+
+        <!-- Loading -->
+        <div id="mc-loading" class="mc-loading" style="display: none;">
+            <div class="mc-spinner"></div>
+            <span>Consultando especificações técnicas oficiais...</span>
+        </div>
+
+        <!-- Erro -->
+        <div id="mc-error" class="mc-alert-error" style="display: none;"></div>
+
+        <!-- Resultado Técnico -->
+        <section id="mc-result" class="mc-result-card" style="display: none;">
+            <div class="mc-result-header">
+                <h2 id="res-nome"></h2>
+                <span id="res-origem" class="mc-tag-ok"></span>
+            </div>
+
+            <div class="mc-specs-grid">
+                <div class="mc-spec-item">
+                    <span class="mc-spec-label">Peso Operacional</span>
+                    <strong class="mc-spec-value" id="res-peso"></strong>
+                </div>
+                <div class="mc-spec-item">
+                    <span class="mc-spec-label">Potência Líquida</span>
+                    <strong class="mc-spec-value" id="res-potencia"></strong>
+                </div>
+                <div class="mc-spec-item">
+                    <span class="mc-spec-label" id="label-capacidade">Capacidade</span>
+                    <strong class="mc-spec-value" id="res-capacidade"></strong>
+                </div>
+                <div class="mc-spec-item">
+                    <span class="mc-spec-label" id="label-parametro">Parâmetro Operacional</span>
+                    <strong class="mc-spec-value" id="res-parametro"></strong>
+                </div>
+            </div>
+
+            <div class="mc-result-footer">
+                <span id="res-fonte-texto"></span>
+                <a id="res-fonte-link" href="#" target="_blank" rel="noopener noreferrer" class="mc-source-link" style="display: none;">
+                    Abrir ficha técnica oficial ↗
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Dados do Catálogo enviados pelo Flask -->
+    <script id="catalogo-data" type="application/json">
+        {{ catalogo | tojson | safe }}
+    </script>
+
+    <script>
+        const categoriaAtual = "{{ categoria }}";
+        const catalogoMaquinas = JSON.parse(document.getElementById('catalogo-data').textContent || '{}');
+
+        const gridMarcas = document.getElementById('grid-marcas');
+        const boxModelos = document.getElementById('box-modelos');
+        const gridModelos = document.getElementById('grid-modelos');
+        const nomeMarcaSpan = document.getElementById('nome-marca-selecionada');
+
+        const formBusca = document.getElementById('form-busca-maquina');
+        const inputMarca = document.getElementById('input-marca');
+        const inputModelo = document.getElementById('input-modelo');
+        const btnBuscar = document.getElementById('btn-buscar');
+
+        const loadingBox = document.getElementById('mc-loading');
+        const errorBox = document.getElementById('mc-error');
+        const resultBox = document.getElementById('mc-result');
+
+        // Clique nos botões de Marca
+        gridMarcas.addEventListener('click', (e) => {
+            const btn = e.target.closest('.mc-chip-marca');
+            if (!btn) return;
+
+            const marca = btn.dataset.marca;
+            document.querySelectorAll('.mc-chip-marca').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            inputMarca.value = marca;
+            inputModelo.value = '';
+            nomeMarcaSpan.textContent = marca;
+
+            // Renderiza os modelos da marca escolhida
+            const modelos = catalogoMaquinas[marca] || [];
+            gridModelos.innerHTML = '';
+
+            modelos.forEach(modelo => {
+                const btnMod = document.createElement('button');
+                btnMod.type = 'button';
+                btnMod.className = 'mc-chip-modelo';
+                btnMod.textContent = modelo;
+                btnMod.dataset.modelo = modelo;
+                gridModelos.appendChild(btnMod);
+            });
+
+            boxModelos.style.display = modelos.length ? 'block' : 'none';
+            resultBox.style.display = 'none';
+            errorBox.style.display = 'none';
+        });
+
+        // Clique nos botões de Modelo -> Dispara consulta automática
+        gridModelos.addEventListener('click', (e) => {
+            const btn = e.target.closest('.mc-chip-modelo');
+            if (!btn) return;
+
+            document.querySelectorAll('.mc-chip-modelo').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const modelo = btn.dataset.modelo;
+            inputModelo.value = modelo;
+            consultarMaquina(inputMarca.value.trim(), modelo);
+        });
+
+        // Envio do formulário manual
+        formBusca.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const marca = inputMarca.value.trim();
+            const modelo = inputModelo.value.trim();
+            if (!marca || !modelo) return;
+            consultarMaquina(marca, modelo);
+        });
+
+        async function consultarMaquina(marca, modelo) {
+            loadingBox.style.display = 'flex';
+            errorBox.style.display = 'none';
+            resultBox.style.display = 'none';
+            btnBuscar.disabled = true;
+
+            try {
+                const resp = await fetch('/api/buscar-maquina', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        categoria: categoriaAtual,
+                        marca: marca,
+                        modelo: modelo
+                    })
+                });
+
+                const res = await resp.json();
+
+                if (!resp.ok || !res.sucesso) {
+                    throw new Error(res.erro || 'Não foi possível obter os dados técnicos.');
+                }
+
+                const d = res.dados;
+                document.getElementById('res-nome').textContent = `${d.marca} ${d.modelo}`;
+                document.getElementById('res-origem').textContent = res.origem === 'cache' ? '⚡ CACHE LOCAL' : '🌐 SPEC OFICIAL IA';
+                document.getElementById('res-peso').textContent = d.peso_operacional;
+                document.getElementById('res-potencia').textContent = d.potencia_liquida;
+                document.getElementById('label-capacidade').textContent = d.label_capacidade || 'Capacidade';
+                document.getElementById('res-capacidade').textContent = d.capacidade;
+                document.getElementById('label-parametro').textContent = d.label_parametro || 'Parâmetro Operacional';
+                document.getElementById('res-parametro').textContent = d.parametro_operacional;
+
+                document.getElementById('res-fonte-texto').textContent = `Fonte: ${d.fonte_nome || 'Catálogo Oficial'}`;
+                const linkEl = document.getElementById('res-fonte-link');
+                if (d.fonte_url) {
+                    linkEl.href = d.fonte_url;
+                    linkEl.style.display = 'inline';
+                } else {
+                    linkEl.style.display = 'none';
+                }
+
+                resultBox.style.display = 'block';
+                resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            } catch (err) {
+                errorBox.textContent = err.message;
+                errorBox.style.display = 'block';
+            } finally {
+                loadingBox.style.display = 'none';
+                btnBuscar.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

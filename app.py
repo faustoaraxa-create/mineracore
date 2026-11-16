@@ -9,6 +9,7 @@ from calculos_banco_lavra import lavra_bp
 from calculos_operacao_carga import operacao_bp
 from calculos_transporte_caminhoes import caminhoes_bp
 from planejamento_mensal import planejamento_mensal_app
+from rotas_maquinas import maquinas_bp
 
 load_dotenv()
 
@@ -36,6 +37,10 @@ app.register_blueprint(lavra_bp)
 app.register_blueprint(operacao_bp)
 app.register_blueprint(caminhoes_bp)
 app.register_blueprint(planejamento_mensal_app)
+app.register_blueprint(maquinas_bp)
+
+# Isenta a API JSON do Handbook de verificação CSRF de formulário
+csrf.exempt(maquinas_bp)
 
 # ---------------------------------------------------------
 # Controle de Cache Profissional (Impede dados presos ao voltar)
