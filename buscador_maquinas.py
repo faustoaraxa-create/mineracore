@@ -61,7 +61,7 @@ class FichaTecnicaMaquina(BaseModel):
     capacidade: str = Field(description="Capacidade ou largura do implemento principal conforme a categoria.")
     parametro_operacional: str = Field(description="Principal parâmetro dimensional ou operacional da categoria.")
     fonte_nome: str = Field(description="Nome da documentação técnica de referência (ex: 'Catálogo Técnico Oficial Caterpillar').")
-    fonte_url: Optional[str] = Field(default=None, description="URL oficial do fabricante se conhecida, ou null.")
+    fonte_url: Optional[str] = Field(default=None, description="URL oficial do fabricante obtida diretamente dos trechos web de referência ou null se inexistente.")
 
 
 def _carregar_cache() -> dict:
@@ -95,7 +95,8 @@ def _buscar_snippet_web(query: str) -> str:
     try:
         with DDGS() as ddgs:
             resultados = list(ddgs.text(query, max_results=3))
-        trechos = [f"- {r.get('title', '')}: {r.get('body', '')}" for r in resultados]
+        # Agora inclui o link (href) explicitamente para o Gemini poder utilizá-lo
+        trechos = [f"- Título: {r.get('title', '')} | URL: {r.get('href', '')} | Descrição: {r.get('body', '')}" for r in resultados]
         return "\n".join(trechos)
     except Exception:
         return ""
@@ -122,8 +123,7 @@ def buscar_especificacoes_maquina(categoria: str, marca: str, modelo: str) -> di
         "exemplo_parametro": "Ex: Padrão de fábrica"
     })
 
-    # Busca snippet complementar rápido apenas para reforçar modelos menos comuns
-    query_web = f"{marca} {modelo} {ctx['nome_tecnico']} operating weight net power specifications"
+    query_web = f"{marca} {modelo} {ctx['nome_tecnico']} specs technical specifications brochure pdf"
     contexto_web = _buscar_snippet_web(query_web)
 
     prompt = f"""
@@ -139,9 +139,9 @@ Regras obrigatórias:
 2. No campo 'capacidade', informe o valor referente a: {ctx['label_capacidade']} ({ctx['exemplo_capacidade']}).
 3. No campo 'parametro_operacional', informe o valor referente a: {ctx['label_parametro']} ({ctx['exemplo_parametro']}).
 4. Nunca deixe campos em branco ou 'N/A' se o equipamento existir na linha industrial/mineração; forneça o valor padrão da configuração base do modelo.
-5. Se não tiver certeza absoluta da URL direta da ficha, retorne fonte_url como null (nunca invente links quebrados).
+5. No campo 'fonte_url', utilize obrigatoriamente uma URL válida listada nos trechos auxiliares da web abaixo (se houver correspondência com o fabricante ou ficha técnica oficial). Se nenhuma URL for adequada nos trechos, retorne null.
 
-Trechos auxiliares da web (use apenas se forem consistentes com o modelo exato):
+Trechos auxiliares da web (com URLs reais encontradas):
 {contexto_web if contexto_web else "Sem trechos adicionais."}
 """.strip()
 
