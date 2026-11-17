@@ -3,8 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="H14P6inY_32wQLQIc9wjFA-J6o3ZzLUvgxtWRTEraPo" />
-    <title>Mineracore — Inteligência Operacional na Mineração</title>
+    <meta name="google-site-verification" content="H14P6inY_32wQLQIc9wjFA-J6o3ZzLUvgxtWRTEraPo">
+    
+    <title>Mineracore — Inteligência Operacional e Dimensionamento de Frota na Mineração</title>
+    <meta name="description" content="Plataforma web de engenharia operacional para mineração: dimensionamento de frota fora de estrada, geometria de bancadas, empolamento e produtividade de carga.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mineracore.com.br/">
+
+    <!-- Open Graph (para pré-visualização profissional ao compartilhar no LinkedIn/WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Mineracore">
+    <meta property="og:title" content="Mineracore — Inteligência Operacional na Mineração">
+    <meta property="og:description" content="Dimensionamento de frota, volume in situ, fator de empolamento e planejamento operacional na mineração.">
+    <meta property="og:url" content="https://mineracore.com.br/">
+
+    <!-- Identificação da Marca para o Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Mineracore",
+      "url": "https://mineracore.com.br/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "Plataforma web para cálculos operacionais, dimensionamento de frota e planejamento de lavra na mineração."
+    }
+    </script>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body id="inicio">
@@ -19,7 +44,7 @@
                 <a href="#inicio">Início</a>
                 <a href="#importancia">Importância da Frota</a>
                 <a href="#sobre">Sobre o Projeto</a>
-                <a href="/dashboard" class="btn-nav-login">Entrar</a>
+                <a href="{{ url_for('dashboard') }}" class="btn-nav-login">Entrar</a>
             </div>
         </div>
     </nav>
@@ -40,7 +65,7 @@
             </p>
 
             <div class="hero-actions">
-                <a href="/dashboard" class="btn-entrar">Acessar Calculadoras & Módulos</a>
+                <a href="{{ url_for('dashboard') }}" class="btn-entrar">Acessar Calculadoras &amp; Módulos</a>
             </div>
         </section>
 
@@ -61,9 +86,9 @@
             </div>
         </section>
 
-        <!-- Nova Seção: A Importância do Dimensionamento de Frota -->
+        <!-- Seção: A Importância do Dimensionamento de Frota -->
         <section id="importancia" class="importancia-frota">
-            <h3>O Custo-Benefício de uma Frota Bem Dimensionada</h3>
+            <h2>O Custo-Benefício de uma Frota Bem Dimensionada</h2>
             <p>
                 No ciclo de lavra a céu aberto, o desequilíbrio entre equipamentos de carga e frotas de transporte 
                 representa um ralo financeiro invisível. Pás e escavadeiras ociosas aguardando basculantes, ou filas 
@@ -78,7 +103,7 @@
         </section>
 
         <section id="sobre" class="sobre-sistema">
-            <h3>A Origem e o Propósito do Mineracore</h3>
+            <h2>A Origem e o Propósito do Mineracore</h2>
             <p>
                 Projetado unindo a vivência prática nas frentes de lavra e a engenharia de produção, o sistema automatiza o 
                 <strong>cálculo de geometria de bancadas</strong>, <strong>volume in situ e solto</strong>, 
