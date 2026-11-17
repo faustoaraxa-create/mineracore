@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimensionamento de Frota - Mineracore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dimensionamento_frota.css') }}">
+</head>
+<body>
+
+<header class="no-print">
+    <h1>MINERACORE</h1>
+    <p>Simulação e Dimensionamento de Frota Operacional (Carga, Transporte e Apoio)</p>
+</header>
+
+<main>
+    <div class="relatorio-container">
+
+        <div class="header-acoes no-print">
+            <a href="/planejamento_mensal" class="btn-voltar">← Voltar ao Planejamento</a>
+            <a href="/dashboard" class="btn-imprimir">Painel Principal</a>
+        </div>
+
+        <h2>Dimensionamento de Frota: {{ plano.contrato }}</h2>
+
+        <!-- BLOCO 1: PREMISSAS RECEBIDAS DO PLANEJAMENTO ANUAL -->
+        <fieldset>
+            <legend>Premissas Herdadas do Plano Operacional</legend>
+            <div class="form-row">
+                <div><strong>Material:</strong> {{ plano.material }}</div>
+                <div><strong>Densidade:</strong> {{ plano.densidade }} t/m³</div>
+                <div><strong>Empolamento:</strong> {{ plano.empolamento }}</div>
+            </div>
+            <div class="form-row margin-top-sm">
+                <div><strong>Meta Anual:</strong> {{ "{:,.2f}".format(plano.meta_producao) }} {{ plano.unidade_meta }}</div>
+                <div><strong>Horas Úteis/Ano:</strong> {{ plano.total_horas_uteis }} h</div>
+                <div><strong>Horas Operadas/Dia:</strong> {{ plano.horas_dia }} h/dia</div>
+            </div>
+            <div class="form-row margin-top-sm">
+                <div><strong>Distância (Ida / Volta):</strong> {{ plano.dist_ida }} km / {{ plano.dist_volta }} km</div>
+                <div><strong>Ciclo Transporte:</strong> {{ plano.tempo_ciclo }} min</div>
+                <div><strong>Ritmo Alvo:</strong> <span style="color: #38bdf8; font-weight: bold;">{{ "{:,.2f}".format(plano.ritmo_hora) }} t/h</span></div>
+            </div>
+        </fieldset>
+
+        <!-- BLOCO 2: SIMULAÇÃO DE FROTA (CARGA, TRANSPORTE E INFRAESTRUTURA) -->
+        <fieldset>
+            <legend>Simulação dos Equipamentos para Atender {{ "{:,.2f}".format(plano.ritmo_hora) }} t/h</legend>
+
+            <div class="logistica-grid">
+                <div class="card-info">
+                    <span class="label">1. Escavadeira (Carga)</span>
+                    <label for="modelo_escavadeira">Modelo da Escavadeira:</label>
+                    <input type="text" id="modelo_escavadeira" placeholder="Ex: Cat 336 / PC350">
+
+                    <label for="cacamba_m3">Capacidade da Caçamba (m³):</label>
+                    <input type="number" id="cacamba_m3" step="0.1" min="0.1" placeholder="Ex: 2.5">
+
+                    <label for="ciclo_escav_seg">Tempo de Ciclo (segundos):</label>
+                    <input type="number" id="ciclo_escav_seg" step="1" min="1" placeholder="Ex: 28">
+
+                    <label for="efic_escav">Eficiência Operacional (%):</label>
+                    <input type="number" id="efic_escav" step="1" min="1" max="100" placeholder="Ex: 83">
+                </div>
+
+                <div class="card-info">
+                    <span class="label">2. Caminhões (Transporte)</span>
+                    <label for="modelo_caminhao">Modelo do Caminhão:</label>
+                    <input type="text" id="modelo_caminhao" placeholder="Ex: Scania G500 / Cat 773">
+
+                    <label for="carga_caminhao_t">Capacidade / Carga Útil (t):</label>
+                    <input type="number" id="carga_caminhao_t" step="0.5" min="1" placeholder="Ex: 35">
+
+                    <label for="efic_transp">Eficiência Operacional (%):</label>
+                    <input type="number" id="efic_transp" step="1" min="1" max="100" placeholder="Ex: 85">
+                </div>
+
+                <div class="card-info">
+                    <span class="label">3. Motoniveladora (Pistas)</span>
+                    <label for="modelo_patrol">Modelo da Motoniveladora:</label>
+                    <input type="text" id="modelo_patrol" placeholder="Ex: Cat 140 / 16M">
+
+                    <label for="extensao_pista_km">Extensão Total da Pista (km):</label>
+                    <input type="number" id="extensao_pista_km" step="0.1" min="0" placeholder="Ex: {{ plano.dist_ida }}">
+                </div>
+
+                <div class="card-info">
+                    <span class="label">4. Trator de Esteiras (Praça / Pilha)</span>
+                    <label for="modelo_trator">Modelo do Trator:</label>
+                    <input type="text" id="modelo_trator" placeholder="Ex: Cat D6 / D8T">
+
+                    <label for="tipo_servico_trator">Atividade Principal:</label>
+                    <select id="tipo_servico_trator">
+                        <option value="apoio_praca">Apoio de Praça e Bota-Fora</option>
+                        <option value="escarificacao">Escarificação / Decapeamento</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" class="btn-proximo" onclick="simularFrota()">⚙️ Simular Frota Ideal</button>
+            </div>
+        </fieldset>
+
+        <!-- BLOCO 3: RESULTADO DA SIMULAÇÃO -->
+        <fieldset id="bloco-resultado-frota" style="display: none;">
+            <legend>Resultado do Dimensionamento da Frota</legend>
+            <div class="cards-grid" id="cards-resultado-frota"></div>
+        </fieldset>
+
+    </div>
+</main>
+
+<script id="plano-data" type="application/json">
+    {{ plano | tojson | safe }}
+</script>
+
+<script>
+    const PLANO = JSON.parse(document.getElementById('plano-data').textContent || '{}');
+    const DENSIDADE = Number(PLANO.densidade) || 2.0;
+    const EMPOLAMENTO = Number(PLANO.empolamento) || 1.25;
+    const RITMO_ALVO_TH = Number(PLANO.ritmo_hora) || 0;
+    const CICLO_TRANSP_MIN = Number(PLANO.tempo_ciclo) || 0;
+    const DIST_IDA_KM = Number(PLANO.dist_ida) || 0;
+
+    function simularFrota() {
+        const cacamba = parseFloat(document.getElementById('cacamba_m3').value) || 0;
+        const cicloEscav = parseFloat(document.getElementById('ciclo_escav_seg').value) || 0;
+        const eficEscav = (parseFloat(document.getElementById('efic_escav').value) || 83) / 100;
+        const cargaCaminhao = parseFloat(document.getElementById('carga_caminhao_t').value) || 0;
+        const eficTransp = (parseFloat(document.getElementById('efic_transp').value) || 85) / 100;
+        const extensaoPista = parseFloat(document.getElementById('extensao_pista_km').value) || DIST_IDA_KM;
+
+        if (cacamba <= 0 || cicloEscav <= 0 || cargaCaminhao <= 0) {
+            alert('Preencha a capacidade da caçamba, o tempo de ciclo da escavadeira e a carga útil do caminhão.');
+            return;
+        }
+
+        // 1. Escavadeira (fator de enchimento padrão 0.90)
+        const densidadeSolta = DENSIDADE / EMPOLAMENTO;
+        const toneladasPorConchada = cacamba * 0.90 * densidadeSolta;
+        const ciclosHora = (3600 / cicloEscav) * eficEscav;
+        const prodEscavadeiraTH = ciclosHora * toneladasPorConchada;
+        const qtdEscavadeiras = Math.ceil(RITMO_ALVO_TH / prodEscavadeiraTH);
+
+        // 2. Caminhões
+        const passadas = Math.max(1, Math.round(cargaCaminhao / toneladasPorConchada));
+        const cargaReal = passadas * toneladasPorConchada;
+        const tempoCargaMin = (passadas * cicloEscav) / 60;
+        const cicloTotalCaminhao = CICLO_TRANSP_MIN + tempoCargaMin;
+        const viagensHoraPorCaminhao = (60 / cicloTotalCaminhao) * eficTransp;
+        const prodPorCaminhaoTH = viagensHoraPorCaminhao * cargaReal;
+        const qtdCaminhoes = Math.ceil(RITMO_ALVO_TH / prodPorCaminhaoTH);
+
+        // 3. Motoniveladora
+        const qtdPatrol = Math.max(1, Math.ceil(Math.max(extensaoPista / 4, qtdCaminhoes / 8)));
+
+        // 4. Trator de Esteiras
+        const qtdTrator = Math.max(1, qtdEscavadeiras);
+
+        const container = document.getElementById('cards-resultado-frota');
+        container.innerHTML = `
+            <div class="card-stat">
+                <div class="title">Escavadeiras Necessárias</div>
+                <div class="value">${qtdEscavadeiras}</div>
+                <div class="unit">${prodEscavadeiraTH.toFixed(1)} t/h cada (${passadas} passes)</div>
+            </div>
+            <div class="card-stat">
+                <div class="title">Caminhões Necessários</div>
+                <div class="value">${qtdCaminhoes}</div>
+                <div class="unit">${prodPorCaminhaoTH.toFixed(1)} t/h cada</div>
+            </div>
+            <div class="card-stat">
+                <div class="title">Motoniveladoras</div>
+                <div class="value">${qtdPatrol}</div>
+                <div class="unit">manutenção de ${extensaoPista} km</div>
+            </div>
+            <div class="card-stat">
+                <div class="title">Tratores de Esteiras</div>
+                <div class="value">${qtdTrator}</div>
+                <div class="unit">apoio praça / bota-fora</div>
+            </div>
+        `;
+
+        document.getElementById('bloco-resultado-frota').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

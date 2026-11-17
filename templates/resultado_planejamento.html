@@ -159,7 +159,7 @@
                 </div>
 
                 <div class="item-metodologia">
-                    <h3>2. Ciclo Completo de Transporte ($T_c$)</h3>
+                    <h3>2. Ciclo Completo de Transporte (Tc)</h3>
                     <p>O tempo de ciclo integra os tempos de deslocamento carregado/vazio com os tempos fixos (carga, descarga, fila e manobras):</p>
                     <code>Tempo de Percurso (min) = [(Dist. Ida / Vel. Carregado) + (Dist. Volta / Vel. Vazio)] × 60</code>
                     <code>Tempo de Ciclo Total (min) = Tempo de Percurso + Tempos Fixos</code>
@@ -185,13 +185,25 @@
         <div class="rodape-acoes no-print">
             <a href="/planejamento_mensal" class="btn-voltar">← Alterar Parâmetros</a>
             
-            <!-- Formulário que envia APENAS a Meta de Produção e o Total de Horas para a próxima etapa (Dimensionamento de Frota) -->
+            <!-- Formulário completo com todos os dados operacionais para o Dimensionamento de Frota -->
             <form action="/dimensionamento_frota" method="POST" style="display: inline;">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="contrato" value="{{ contrato }}">
+                <input type="hidden" name="material" value="{{ material }}">
+                <input type="hidden" name="densidade" value="{{ densidade }}">
+                <input type="hidden" name="empolamento" value="{{ empolamento }}">
                 <input type="hidden" name="meta_producao" value="{{ meta }}">
-                <input type="hidden" name="total_horas_uteis" value="{{ total_horas }}">
-                <input type="hidden" name="ritmo_hora" value="{{ prod_hora }}">
                 <input type="hidden" name="unidade_meta" value="{{ unidade }}">
+                <input type="hidden" name="total_horas_uteis" value="{{ total_horas }}">
+                <input type="hidden" name="horas_dia" value="{{ horas_efetivas_dia_total }}">
+                <input type="hidden" name="prod_dia" value="{{ prod_dia }}">
+                <input type="hidden" name="ritmo_hora" value="{{ prod_hora }}">
+                <input type="hidden" name="dist_ida" value="{{ dist_ida }}">
+                <input type="hidden" name="dist_volta" value="{{ dist_volta }}">
+                <input type="hidden" name="vel_carregado" value="{{ vel_carregado }}">
+                <input type="hidden" name="vel_vazio" value="{{ vel_vazio }}">
+                <input type="hidden" name="tempo_fixo" value="{{ tempo_fixo }}">
+                <input type="hidden" name="tempo_ciclo" value="{{ tempo_ciclo }}">
                 <button type="submit" class="btn-proximo">Avançar para Próxima Etapa →</button>
             </form>
         </div>
@@ -201,15 +213,12 @@
 
 <script>
     function alternarAba(abaId, elementoBtn) {
-        // Ocultar todos os conteúdos das abas
         const conteudos = document.querySelectorAll('.conteudo-aba');
         conteudos.forEach(c => c.classList.remove('active'));
 
-        // Desativar todos os botões de abas
         const botoes = document.querySelectorAll('.btn-aba');
         botoes.forEach(b => b.classList.remove('active'));
 
-        // Ativar a aba e o botão selecionados
         document.getElementById(abaId).classList.add('active');
         elementoBtn.classList.add('active');
     }
