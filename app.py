@@ -69,5 +69,23 @@ def voltar_dashboard():
     session.pop('dados_planejamento', None)
     return redirect(url_for('dashboard'))
 
+# ---------------------------------------------------------
+# Rotas de Indexação para Motores de Busca (Google / Bing)
+# ---------------------------------------------------------
+@app.route('/robots.txt')
+@limiter.exempt
+def robots():
+    return "User-agent: *\nAllow: /\nSitemap: https://mineracore.com.br/sitemap.xml", 200, {'Content-Type': 'text/plain'}
+
+@app.route('/sitemap.xml')
+@limiter.exempt
+def sitemap():
+    xml = """<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        <url><loc>https://mineracore.com.br/</loc><priority>1.0</priority></url>
+        <url><loc>https://mineracore.com.br/dashboard</loc><priority>0.8</priority></url>
+    </urlset>"""
+    return xml, 200, {'Content-Type': 'application/xml'}
+
 if __name__ == "__main__":
     app.run(debug=not is_prod)
