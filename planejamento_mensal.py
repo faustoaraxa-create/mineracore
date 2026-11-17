@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
 from utils import parse_float, parse_int
-from duckduckgo_search import DDGS
 import os
 import json
 import traceback
@@ -144,42 +143,6 @@ def planejamento_mensal():
             return "Ocorreu um erro ao processar os cálculos operacionais. Verifique os valores informados.", 400
 
     return render_template('planejamento_mensal.html')
-
-
-@planejamento_mensal_app.route('/api/estimar-chuvas', methods=['POST'])
-def estimar_chuvas():
-    try:
-        dados = request.get_json() or {}
-        regiao = dados.get('regiao', 'Araxá - MG')
-        
-        # Realiza a busca ativa na web de dados pluviométricos reais da região informada
-        textos_encontrados = []
-        try:
-            with DDGS() as ddgs:
-                resultados = ddgs.text(f"precipitação média mensal histórico chuvas paralisação mineração {regiao}", max_results=3)
-                if resultados:
-                    textos_encontrados = [r.get('body', '') for r in resultados]
-        except Exception as search_err:
-            print(f"Aviso na busca DuckDuckGo: {search_err}")
-
-        # Processamento dinâmico baseado no volume de precipitação e dias chuvosos coletados da web
-        # Caso a busca retorne dados, estruturamos o vetor proporcional às características da região
-        # Gerando dinamicamente um array de 12 meses real baseado em parâmetros climatológicos da busca
-        
-        # Base de cálculo climatológica proporcional à pluviosidade típica da região pesquisada (ex: Araxá-MG: verão chuvoso, inverno seco)
-        base_chuva = [42.0, 48.0, 36.0, 16.0, 6.0, 0.0, 0.0, 0.0, 6.0, 18.0, 32.0, 40.0]
-        
-        # Se encontrou termos de busca específicos, podemos ajustar levemente o fator dinâmico
-        if textos_encontrados:
-            print(content := f"Contexto web integrado com sucesso para {regiao} via DuckDuckGo.")
-
-        return jsonify({"horas_meses": base_chuva}), 200
-        
-    except Exception as e:
-        erro_msg = str(e)
-        print(f"--- ERRO NA ESTIMATIVA DE CHUVAS: {erro_msg} ---")
-        traceback.print_exc()
-        return jsonify({"erro": erro_msg}), 500
 
 
 @planejamento_mensal_app.route('/dimensionamento_frota', methods=['POST'])
