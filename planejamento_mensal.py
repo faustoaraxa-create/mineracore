@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, jsonify
 from utils import parse_float, parse_int
 from duckduckgo_search import DDGS
-from google import genai
 import os
 import json
 import traceback
+import requests
 
 planejamento_mensal_app = Blueprint('planejamento_mensal_app', __name__)
 
@@ -155,33 +155,64 @@ def estimar_chuvas():
         
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
-            return jsonify({"erro": "Chave GEMINI_API_KEY não configurada no servidor."}), 400
+            return jsonify({"erro": "Variável GEMINI_API_KEY não configurada no servidor."}), 400
 
-        # Busca opcional de contexto na web
+        # Faz a busca real na web via DuckDuckGo para obter dados pluviométricos atualizados da região
         resultados_busca = []
         try:
             with DDGS() as ddgs:
-                resultados_busca = [r for r in ddgs.text(f"precipitação média mensal histórico chuvas {regiao}", max_results=2)]
+                resultados_busca = [r.get('body', '') for r in ddgs.text(f"precipitação média mensal histórico chuvas paralisação mineração {regiao}", max_results=3)]
         except Exception as search_err:
             print(f"Aviso na busca DuckDuckGo: {search_err}")
 
-        # Inicializa o cliente com a chave configurada e utiliza o modelo atualizado gemini-2.5-flash
-        client = genai.Client(api_key=api_key)
-        prompt = f"""
-        Com base no histórico pluviométrico para mineração a céu aberto em '{regiao}', 
-        estime o número médio de HORAS DE PARALISAÇÃO OPERACIONAL por mês (de Janeiro a Dezembro, exatamente 12 valores) para caminhões fora de estrada.
-        Resultados de referência da web: {resultados_busca}
-        
-        Retorne ESTRITAMENTE um objeto JSON puro contendo uma chave "horas_meses" com uma lista de 12 números. Exemplo:
-        {{"horas_meses": [45, 50, 40, 20, 5, 0, 0, 0, 5, 15, 30, 45]}}
-        """
+        # Se o token for do tipo OAuth (começa com AQ.), usamos a requisição REST direta para evitar o erro do SDK
+        if api_key.startswith("AQ."):
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            prompt_texto = f"""
+            Com base estritamente no histórico pluviométrico para mineração a céu aberto em '{regiao}', 
+            calcule ou estime o número médio de HORAS DE PARALISAÇÃO OPERACIONAL por mês (de Janeiro a Dezembro, exatamente 12 valores em ordem) para caminhões fora de estrada.
+            Contexto da web obtido: {resultados_busca}
+            
+            Retorne ESTRITAMENTE um objeto JSON puro contendo uma chave "horas_meses" com uma lista de 12 números (float ou int). Exemplo:
+            {{"horas_meses": [45, 50, 40, 20, 5, 0, 0, 0, 5, 15, 30, 45]}}
+            """
+            payload = {
+                "contents": [{
+                    "parts": [{"text": prompt_texto}]
+                }]
+            }
+            res = requests.post(url, headers=headers, json=payload, timeout=20)
+            if res.status_code != 200:
+                return jsonify({"erro": f"Erro na API Google (HTTP {res.status_code}): {res.text}"}), 500
+            
+            data_resp = res.json()
+            try:
+                texto_resposta = data_resp['candidates'][0]['content']['parts'][0]['text'].strip()
+            except Exception as parse_ex:
+                return jsonify({"erro": f"Resposta inválida da API: {data_resp}"}), 500
+        else:
+            # Caso seja uma chave padrão AIzaSy...
+            from google import genai
+            client = genai.Client(api_key=api_key)
+            prompt_texto = f"""
+            Com base no histórico pluviométrico para mineração a céu aberto em '{regiao}', 
+            estime o número médio de HORAS DE PARALISAÇÃO OPERACIONAL por mês (de Janeiro a Dezembro, exatamente 12 valores) para caminhões fora de estrada.
+            Contexto da web: {resultados_busca}
+            
+            Retorne ESTRITAMENTE um objeto JSON puro contendo uma chave "horas_meses" com uma lista de 12 números. Exemplo:
+            {{"horas_meses": [45, 50, 40, 20, 5, 0, 0, 0, 5, 15, 30, 45]}}
+            """
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt_texto
+            )
+            texto_resposta = response.text.strip()
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        
-        texto_resposta = response.text.strip()
+        # Limpeza do bloco markdown de código se houver na resposta da IA
         if texto_resposta.startswith("```json"):
             texto_resposta = texto_resposta[7:-3].strip()
         elif texto_resposta.startswith("```"):
@@ -192,7 +223,7 @@ def estimar_chuvas():
         
     except Exception as e:
         erro_msg = str(e)
-        print(f"--- ERRO NA CHAMADA DA IA DE CHUVAS: {erro_msg} ---")
+        print(f"--- ERRO NA ESTIMATIVA DE CHUVAS: {erro_msg} ---")
         traceback.print_exc()
         return jsonify({"erro": erro_msg}), 500
 
