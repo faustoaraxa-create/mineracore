@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparativo Técnico de Frota - Mineracore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dimensionamento_frota.css') }}">
+</head>
+<body>
+
+<header class="no-print">
+    <h1>MINERACORE</h1>
+    <p>Relatório Executivo de Comparação Técnica de Frotas (Opção 1 vs. Opção 2)</p>
+</header>
+
+<main>
+    <div class="relatorio-container" style="max-width: 1320px;">
+
+        <div class="header-acoes no-print">
+            <button type="button" class="btn-voltar" style="cursor: pointer;" onclick="window.close()">← Fechar Aba e Voltar</button>
+            <button type="button" class="btn-imprimir" style="cursor: pointer;" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+        </div>
+
+        <h2>Estudo Comparativo de Frota: {{ plano.contrato }}</h2>
+
+        <!-- CARDS EXECUTIVOS DOS DADOS DE PRODUÇÃO -->
+        <fieldset>
+            <legend>Premissas de Produção & Logística do Contrato</legend>
+            <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));">
+                <div class="card-stat" style="border-color: #26334d;">
+                    <div class="title">Material / Densidade</div>
+                    <div class="value" style="font-size: 1.45rem;">{{ plano.material }}</div>
+                    <div class="unit">In situ: {{ plano.densidade }} t/m³ | Solta: {{ "%.2f"|format(plano.densidade / plano.empolamento) }} t/m³</div>
+                </div>
+
+                <div class="card-stat" style="border-color: #26334d;">
+                    <div class="title">Meta de Produção</div>
+                    <div class="value" style="font-size: 1.45rem;">{{ "{:,.0f}".format(plano.meta_producao) }}</div>
+                    <div class="unit">{{ plano.unidade_meta }} / ano</div>
+                </div>
+
+                <div class="card-stat" style="border-color: #26334d;">
+                    <div class="title">Regime Operacional</div>
+                    <div class="value" style="font-size: 1.45rem;">{{ plano.total_horas_uteis }} h</div>
+                    <div class="unit">{{ plano.horas_dia }} h/dia úteis</div>
+                </div>
+
+                <div class="card-stat" style="border-color: #26334d;">
+                    <div class="title">Perfil de Transporte</div>
+                    <div class="value" style="font-size: 1.45rem;">{{ plano.dist_ida }} / {{ plano.dist_volta }} km</div>
+                    <div class="unit">Ciclo base: {{ plano.tempo_ciclo }} min</div>
+                </div>
+
+                <div class="card-stat" style="border-color: #38bdf8; background: linear-gradient(180deg, #131c31 0%, #0f2537 100%);">
+                    <div class="title">Ritmo Alvo Exigido</div>
+                    <div class="value" style="font-size: 1.75rem; color: #4ade80;">{{ "{:,.2f}".format(plano.ritmo_hora) }}</div>
+                    <div class="unit">toneladas / hora (t/h)</div>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- CONFRONTO LADO A LADO DAS 2 OPÇÕES -->
+        <div id="container-comparativo-duplo" class="frota-grid-2x2" style="gap: 24px; align-items: stretch;"></div>
+
+    </div>
+</main>
+
+<script id="plano-data" type="application/json">
+    {{ plano | tojson | safe }}
+</script>
+<script src="{{ url_for('static', filename='dimensionamento_frota.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', renderizarPaginaComparativaDupla);
+</script>
+
+</body>
+</html>

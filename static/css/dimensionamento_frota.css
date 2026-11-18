@@ -417,7 +417,140 @@ legend {
     font-size: 0.92rem;
 }
 
-/* Responsividade */
+/* =========================================================
+   COMPARATIVO DE CENÁRIOS SALVOS EM CACHE
+   ========================================================= */
+.barra-salvar-cenario {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.barra-salvar-cenario input {
+    flex: 1;
+    min-width: 240px;
+    background-color: #0b1120;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #f8fafc;
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.barra-salvar-cenario input:focus {
+    border-color: #38bdf8;
+}
+
+.header-comparativo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.info-cache {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.btn-limpar-cache {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-limpar-cache:hover {
+    background-color: rgba(239, 68, 68, 0.25);
+}
+
+.tabela-scroll {
+    overflow-x: auto;
+}
+
+.tabela-comparativa {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    background-color: #131c31;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabela-comparativa th,
+.tabela-comparativa td {
+    padding: 11px 12px;
+    text-align: left;
+    border-bottom: 1px solid #1e293b;
+    vertical-align: top;
+}
+
+.tabela-comparativa th {
+    background-color: #1e293b;
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.tabela-comparativa tr:hover {
+    background-color: rgba(56, 189, 248, 0.05);
+}
+
+.linha-destaque-cenario {
+    background-color: rgba(16, 185, 129, 0.06);
+}
+
+.badge-recomendado {
+    display: inline-block;
+    background-color: rgba(16, 185, 129, 0.18);
+    color: #4ade80;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+.btn-acao-tabela {
+    background-color: #0b1120;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-right: 4px;
+    transition: all 0.2s;
+}
+
+.btn-acao-tabela:hover {
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+.btn-excluir:hover {
+    border-color: #f87171;
+    color: #f87171;
+}
+
+/* =========================================================
+   RESPONSIVIDADE E MODO DE IMPRESSÃO
+   ========================================================= */
 @media (max-width: 900px) {
     .frota-grid-2x2 {
         grid-template-columns: 1fr;
@@ -437,6 +570,54 @@ legend {
     }
     body {
         background: #ffffff;
-        color: #000000;
+        color: #0f172a;
+    }
+    .relatorio-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    h2 {
+        color: #0f172a;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    fieldset,
+    .card-equipamento,
+    .card-stat,
+    .acoplamento-grid,
+    .diagnostico-box,
+    .resumo-terreno-box,
+    .memorial-sugestao,
+    .memorial-item,
+    .indicador-rapido-eq,
+    .tabela-comparativa {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+    }
+    legend,
+    .tabela-comparativa th {
+        background: #f1f5f9 !important;
+        color: #0369a1 !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .tabela-comparativa td {
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+    .destaque-ritmo,
+    .card-stat .value,
+    .card-equipamento-header .titulo-eq,
+    .diagnostico-titulo,
+    .memorial-titulo {
+        color: #0369a1 !important;
+    }
+    .mf-ok { color: #15803d !important; }
+    .mf-alerta { color: #b45309 !important; }
+    .mf-saturado { color: #c2410c !important; }
+    .badge-recomendado {
+        background: #dcfce7 !important;
+        color: #15803d !important;
+        border-color: #86efac !important;
     }
 }

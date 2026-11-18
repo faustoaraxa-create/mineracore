@@ -9,6 +9,7 @@ from calculos_banco_lavra import lavra_bp
 from calculos_operacao_carga import operacao_bp
 from calculos_transporte_caminhoes import caminhoes_bp
 from planejamento_mensal import planejamento_mensal_app
+from dimensionamento_frota import frota_bp
 from rotas_maquinas import maquinas_bp
 
 load_dotenv()
@@ -37,6 +38,7 @@ app.register_blueprint(lavra_bp)
 app.register_blueprint(operacao_bp)
 app.register_blueprint(caminhoes_bp)
 app.register_blueprint(planejamento_mensal_app)
+app.register_blueprint(frota_bp)
 app.register_blueprint(maquinas_bp)
 
 # Isenta APIs JSON de verificação CSRF de formulário tradicional (se necessário)
@@ -67,6 +69,7 @@ def voltar_dashboard():
     session.pop('dados_carga', None)
     session.pop('dados_transporte', None)
     session.pop('dados_planejamento', None)
+    session.pop('plano_frota', None)
     return redirect(url_for('dashboard'))
 
 # ---------------------------------------------------------

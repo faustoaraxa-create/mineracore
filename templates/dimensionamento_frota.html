@@ -16,26 +16,32 @@
 <main>
     <div class="relatorio-container">
 
+        <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
         <div class="header-acoes no-print">
-            <a href="/planejamento_mensal" class="btn-voltar">← Voltar ao Planejamento</a>
-            <a href="/dashboard" class="btn-imprimir">Painel Principal</a>
+            <a href="{{ url_for('planejamento_mensal_app.planejamento_mensal') }}" class="btn-voltar">← Voltar ao Planejamento</a>
+            <a href="{{ url_for('dashboard') }}" class="btn-imprimir">Painel Principal</a>
         </div>
 
         <h2>Dimensionamento de Frota: {{ plano.contrato }}</h2>
 
-        <!-- BLOCO 1: PREMISSAS RECEBIDAS DO PLANEJAMENTO ANUAL -->
+        <!-- =================================================================
+             BLOCO 1: PREMISSAS RECEBIDAS DO PLANEJAMENTO ANUAL (FLASK/JINJA)
+             ================================================================= -->
         <fieldset>
             <legend>Premissas Herdadas do Plano Operacional</legend>
+
             <div class="form-row">
                 <div><strong>Material:</strong> {{ plano.material }}</div>
                 <div><strong>Densidade In Situ:</strong> {{ plano.densidade }} t/m³</div>
                 <div><strong>Empolamento:</strong> {{ plano.empolamento }} (Solta: {{ "%.2f"|format(plano.densidade / plano.empolamento) }} t/m³)</div>
             </div>
+
             <div class="form-row margin-top-sm">
                 <div><strong>Meta Anual:</strong> {{ "{:,.2f}".format(plano.meta_producao) }} {{ plano.unidade_meta }}</div>
                 <div><strong>Horas Úteis/Ano:</strong> {{ plano.total_horas_uteis }} h</div>
                 <div><strong>Horas Operadas/Dia:</strong> {{ plano.horas_dia }} h/dia</div>
             </div>
+
             <div class="form-row margin-top-sm">
                 <div><strong>Distância (Ida / Volta):</strong> {{ plano.dist_ida }} km / {{ plano.dist_volta }} km</div>
                 <div><strong>Ciclo Transporte:</strong> {{ plano.tempo_ciclo }} min</div>
@@ -43,7 +49,9 @@
             </div>
         </fieldset>
 
-        <!-- BLOCO 2: CONDIÇÕES DE TERRENO E SIMULAÇÃO DE FROTA -->
+        <!-- =================================================================
+             BLOCO 2: CONDIÇÕES GEOTÉCNICAS E PARÂMETROS DOS EQUIPAMENTOS
+             ================================================================= -->
         <fieldset>
             <legend>Condições de Piso, Contingência e Equipamentos</legend>
 
@@ -64,10 +72,9 @@
                 </div>
             </div>
 
-            <!-- GRADE 2x2 LARGA -->
             <div class="frota-grid-2x2">
 
-                <!-- 1. ESCAVADEIRA -->
+                <!-- 1. EQUIPAMENTO DE CARGA (ESCAVADEIRA) -->
                 <div class="card-equipamento">
                     <div class="card-equipamento-header">
                         <span class="titulo-eq">1. Escavadeira (Equipamento de Carga)</span>
@@ -107,7 +114,7 @@
                     </div>
                 </div>
 
-                <!-- 2. CAMINHÕES -->
+                <!-- 2. FROTA DE TRANSPORTE (CAMINHÕES) -->
                 <div class="card-equipamento">
                     <div class="card-equipamento-header">
                         <span class="titulo-eq">2. Caminhões (Frota de Transporte)</span>
@@ -136,7 +143,7 @@
                     </div>
                 </div>
 
-                <!-- 3. MOTONIVELADORA -->
+                <!-- 3. INFRAESTRUTURA DE PISTAS (MOTONIVELADORA) -->
                 <div class="card-equipamento">
                     <div class="card-equipamento-header">
                         <span class="titulo-eq">3. Motoniveladora (Manutenção de Pistas)</span>
@@ -155,7 +162,7 @@
                     </div>
                 </div>
 
-                <!-- 4. TRATOR DE ESTEIRAS -->
+                <!-- 4. APOIO DE PRAÇA E PILHA (TRATOR DE ESTEIRAS) -->
                 <div class="card-equipamento">
                     <div class="card-equipamento-header">
                         <span class="titulo-eq">4. Trator de Esteiras (Praça e Pilha)</span>
@@ -179,7 +186,7 @@
 
             </div>
 
-            <!-- PAINEL MEMORIAL DA SUGESTÃO TÉCNICA -->
+            <!-- MEMORIAL TÉCNICO EXIBIDO QUANDO O USUÁRIO USA A SUGESTÃO AUTOMÁTICA -->
             <div class="memorial-sugestao" id="memorial-sugestao">
                 <div class="memorial-titulo">
                     📐 Memorial Técnico da Frota Sugerida (Critério de Engenharia)
@@ -187,7 +194,8 @@
                 <div class="memorial-grid" id="memorial-sugestao-grid"></div>
             </div>
 
-            <div class="acoes-simulacao">
+            <!-- BOTÕES DE AÇÃO -->
+            <div class="acoes-simulacao no-print">
                 <button type="button" class="btn-voltar btn-sugerir" onclick="sugerirFrotaCompativel()">
                     💡 Sugerir Frota Compatível para {{ "{:,.0f}".format(plano.ritmo_hora) }} t/h
                 </button>
@@ -195,13 +203,47 @@
             </div>
         </fieldset>
 
-        <!-- BLOCO 3: RESULTADO DA SIMULAÇÃO E DIAGNÓSTICO -->
+        <!-- =================================================================
+             BLOCO 3: RESULTADO DA SIMULAÇÃO ATUAL E GRAVAÇÃO EM CACHE
+             ================================================================= -->
         <fieldset id="bloco-resultado-frota" style="display: none;">
             <legend>Resultado do Dimensionamento da Frota</legend>
+
             <div id="resumo-km-terreno" class="resumo-terreno-box"></div>
             <div class="cards-grid" id="cards-resultado-frota"></div>
             <div id="indicadores-acoplamento" class="painel-acoplamento"></div>
             <div id="diagnostico-engenharia" class="painel-diagnostico"></div>
+
+            <div class="barra-salvar-cenario no-print">
+                <input type="text" id="nome_cenario" placeholder="Nome da opção (Ex: Opção 1 - Frota 100t)">
+                <button type="button" class="btn-voltar btn-sugerir" onclick="salvarCenarioCache()">
+                    💾 Gravar Opção para Confronto (Máx. 2)
+                </button>
+                <span id="feedback-cenario" style="color: #4ade80; font-size: 0.85rem; font-weight: 600;"></span>
+            </div>
+        </fieldset>
+
+        <!-- =================================================================
+             BLOCO 4: ATALHO PARA PÁGINA EXECUTIVA DE COMPARAÇÃO (MÁX. 2 OPÇÕES)
+             ================================================================= -->
+        <fieldset id="bloco-comparativo-cenarios" style="display: none;">
+            <legend>Opções Gravadas para Confronto Técnico (Máx. 2 Opções)</legend>
+
+            <div class="header-comparativo no-print">
+                <span class="info-cache" id="resumo-cenarios-gravados">
+                    0 de 2 opções gravadas neste contrato.
+                </span>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ url_for('frota_bp.comparativo_frota') }}" target="_blank" class="btn-proximo" style="text-decoration: none; padding: 9px 18px; font-size: 0.9rem;">
+                        📊 Abrir Comparativo em Nova Página ↗
+                    </a>
+                    <button type="button" class="btn-limpar-cache" onclick="limparCenariosCache()">
+                        🗑️ Limpar Opções
+                    </button>
+                </div>
+            </div>
+
+            <div id="lista-mini-cenarios" class="subgrid-2" style="margin-top: 10px;"></div>
         </fieldset>
 
     </div>
@@ -211,332 +253,7 @@
     {{ plano | tojson | safe }}
 </script>
 
-<script>
-    const PLANO = JSON.parse(document.getElementById('plano-data').textContent || '{}');
-    const DENSIDADE = Number(PLANO.densidade) || 2.0;
-    const EMPOLAMENTO = Number(PLANO.empolamento) || 1.25;
-    const DENSIDADE_SOLTA = DENSIDADE / EMPOLAMENTO;
-    const RITMO_ALVO_TH = Number(PLANO.ritmo_hora) || 0;
-    const CICLO_TRANSP_MIN = Number(PLANO.tempo_ciclo) || 0;
-    const DIST_IDA_KM = Number(PLANO.dist_ida) || 0;
-    const DIST_VOLTA_KM = Number(PLANO.dist_volta) || DIST_IDA_KM;
-    const HORAS_UTEIS_ANO = Number(PLANO.total_horas_uteis) || 0;
-
-    function atualizarFatorEnchimentoPiso() {
-        const perfilPiso = document.getElementById('perfil_piso').value;
-        const inputEnchimento = document.getElementById('fator_enchimento_pct');
-        inputEnchimento.value = (perfilPiso === 'rocha') ? 80 : 90;
-        atualizarPreviewEscavadeira();
-    }
-
-    function atualizarPreviewEscavadeira() {
-        const cacamba = parseFloat(document.getElementById('cacamba_m3').value) || 0;
-        const enchimento = (parseFloat(document.getElementById('fator_enchimento_pct').value) || 90) / 100;
-        const ciclo = parseFloat(document.getElementById('ciclo_escav_seg').value) || 0;
-        const efic = (parseFloat(document.getElementById('efic_escav').value) || 83) / 100;
-
-        const preview = document.getElementById('preview-escavadeira');
-        const badge = document.getElementById('badge-classe-escav');
-
-        if (cacamba > 0) {
-            const massaPasse = cacamba * enchimento * DENSIDADE_SOLTA;
-            const prodUnit = ciclo > 0 ? ((3600 / ciclo) * efic * massaPasse) : 0;
-
-            if (cacamba >= 12) badge.textContent = 'Mineração Pesada (200t+)';
-            else if (cacamba >= 6) badge.textContent = 'Mineração Média (90t–140t)';
-            else badge.textContent = 'Apoio / Pequeno Porte (35t–50t)';
-
-            preview.innerHTML = `
-                <span>Massa/Passe: <strong>${massaPasse.toFixed(2)} t</strong> (${(cacamba * enchimento).toFixed(1)} m³ soltos)</span>
-                <span>Prod. Unitária: <strong>${prodUnit > 0 ? prodUnit.toFixed(1) + ' t/h' : '--'}</strong></span>
-            `;
-        } else {
-            badge.textContent = 'Classe Carga';
-            preview.innerHTML = `
-                <span>Massa/Passe: <strong>-- t</strong></span>
-                <span>Prod. Unitária: <strong>-- t/h</strong></span>
-            `;
-        }
-    }
-
-    function sugerirFrotaCompativel() {
-        const perfilPiso = document.getElementById('perfil_piso').value;
-        const enchimentoPct = perfilPiso === 'rocha' ? 80 : 90;
-        document.getElementById('fator_enchimento_pct').value = enchimentoPct;
-
-        let criterioTexto = '';
-
-        if (RITMO_ALVO_TH >= 5000) {
-            document.getElementById('modelo_escavadeira').value = 'Cat 6020B / Komatsu PC2000 (Classe 200t–225t)';
-            document.getElementById('cacamba_m3').value = '14.0';
-            document.getElementById('ciclo_escav_seg').value = '28';
-            document.getElementById('efic_escav').value = '83';
-
-            document.getElementById('modelo_caminhao').value = 'Cat 777 / Komatsu HD785 (Fora-de-Estrada 100t)';
-            document.getElementById('carga_caminhao_t').value = '100';
-            document.getElementById('efic_transp').value = '85';
-
-            document.getElementById('modelo_patrol').value = 'Cat 16M / 24M (Mineração Pesada)';
-            document.getElementById('modelo_trator').value = perfilPiso === 'movedico' ? 'Cat D9 / D10' : 'Cat D8T / D9';
-            criterioTexto = 'Alta produção (> 5.000 t/h): Frota pesada acoplada em 5 passes de 14 m³.';
-        } else if (RITMO_ALVO_TH >= 2000) {
-            document.getElementById('modelo_escavadeira').value = 'Cat 6015B / Komatsu PC1250 (Classe 120t–140t)';
-            document.getElementById('cacamba_m3').value = '8.5';
-            document.getElementById('ciclo_escav_seg').value = '27';
-            document.getElementById('efic_escav').value = '83';
-
-            document.getElementById('modelo_caminhao').value = 'Cat 775 / Komatsu HD605 (Fora-de-Estrada 65t)';
-            document.getElementById('carga_caminhao_t').value = '65';
-            document.getElementById('efic_transp').value = '85';
-
-            document.getElementById('modelo_patrol').value = 'Cat 16M';
-            document.getElementById('modelo_trator').value = 'Cat D8T';
-            criterioTexto = 'Produção intermediária (2.000 a 5.000 t/h): Acoplamento em 5 passes de 8,5 m³.';
-        } else if (RITMO_ALVO_TH >= 800) {
-            document.getElementById('modelo_escavadeira').value = 'Cat 395 / Komatsu PC800 (Classe 90t)';
-            document.getElementById('cacamba_m3').value = '6.5';
-            document.getElementById('ciclo_escav_seg').value = '26';
-            document.getElementById('efic_escav').value = '83';
-
-            document.getElementById('modelo_caminhao').value = 'Cat 773 / Volvo R60 (Fora-de-Estrada 55t)';
-            document.getElementById('carga_caminhao_t').value = '55';
-            document.getElementById('efic_transp').value = '85';
-
-            document.getElementById('modelo_patrol').value = 'Cat 14M / 16M';
-            document.getElementById('modelo_trator').value = 'Cat D8T';
-            criterioTexto = 'Média escala (800 a 2.000 t/h): Acoplamento em 5 passes de 6,5 m³.';
-        } else {
-            document.getElementById('modelo_escavadeira').value = 'Cat 352 / Komatsu PC490 (Classe 50t)';
-            document.getElementById('cacamba_m3').value = '4.5';
-            document.getElementById('ciclo_escav_seg').value = '24';
-            document.getElementById('efic_escav').value = '83';
-
-            document.getElementById('modelo_caminhao').value = 'Scania G500 / Volvo FMX 8x4 (32t)';
-            document.getElementById('carga_caminhao_t').value = '32';
-            document.getElementById('efic_transp').value = '85';
-
-            document.getElementById('modelo_patrol').value = 'Cat 140 / John Deere 670G';
-            document.getElementById('modelo_trator').value = 'Cat D6T';
-            criterioTexto = 'Pequena escala (< 800 t/h): Caminhões rodoviários pesados acoplados em 5 passes de 4,5 m³.';
-        }
-
-        if (!document.getElementById('extensao_pista_km').value) {
-            document.getElementById('extensao_pista_km').value = DIST_IDA_KM;
-        }
-        if (!document.getElementById('margem_falha').value) {
-            document.getElementById('margem_falha').value = '10';
-        }
-
-        atualizarPreviewEscavadeira();
-        simularFrota(criterioTexto);
-    }
-
-    function simularFrota(criterioSugestao = '') {
-        const perfilPiso = document.getElementById('perfil_piso').value;
-        const margemFalhaPct = parseFloat(document.getElementById('margem_falha').value) || 0;
-        const fatorContingencia = 1 + (margemFalhaPct / 100);
-
-        const modEscav = document.getElementById('modelo_escavadeira').value.trim();
-        const cacamba = parseFloat(document.getElementById('cacamba_m3').value) || 0;
-        const fatorEnchimento = (parseFloat(document.getElementById('fator_enchimento_pct').value) || 90) / 100;
-        const cicloEscav = parseFloat(document.getElementById('ciclo_escav_seg').value) || 0;
-        const eficEscavBase = (parseFloat(document.getElementById('efic_escav').value) || 83) / 100;
-
-        const modCam = document.getElementById('modelo_caminhao').value.trim();
-        const cargaCaminhao = parseFloat(document.getElementById('carga_caminhao_t').value) || 0;
-        const eficTranspBase = (parseFloat(document.getElementById('efic_transp').value) || 85) / 100;
-
-        const modPatrol = document.getElementById('modelo_patrol').value.trim();
-        const extensaoPista = parseFloat(document.getElementById('extensao_pista_km').value) || DIST_IDA_KM;
-        const modTrator = document.getElementById('modelo_trator').value.trim();
-
-        if (cacamba <= 0 || cicloEscav <= 0 || cargaCaminhao <= 0) {
-            alert('Preencha a capacidade da caçamba, o tempo de ciclo da escavadeira e a carga útil do caminhão.');
-            return;
-        }
-
-        atualizarPreviewEscavadeira();
-
-        let fatorPisoTransp = 1.00;
-        let divisorPatrolKm = 4.0;
-        let extraTrator = 0;
-        let nomePiso = 'Cascalho Compactado / Seco';
-
-        if (perfilPiso === 'argila') {
-            fatorPisoTransp = 0.85;
-            divisorPatrolKm = 2.5;
-            nomePiso = 'Argiloso / Escorregadio';
-        } else if (perfilPiso === 'movedico') {
-            fatorPisoTransp = 0.78;
-            divisorPatrolKm = 2.0;
-            extraTrator = 1;
-            nomePiso = 'Terreno Movediço / Instável';
-        } else if (perfilPiso === 'rocha') {
-            nomePiso = 'Rocha Detonada / Abrasivo';
-        }
-
-        // 1. Escavadeira
-        const toneladasPorConchada = cacamba * fatorEnchimento * DENSIDADE_SOLTA;
-        const ciclosHora = (3600 / cicloEscav) * eficEscavBase;
-        const prodEscavadeiraTH = ciclosHora * toneladasPorConchada;
-        const escavNominal = Math.ceil(RITMO_ALVO_TH / prodEscavadeiraTH);
-        const qtdEscavadeiras = Math.ceil((RITMO_ALVO_TH / prodEscavadeiraTH) * fatorContingencia);
-
-        // 2. Caminhões e Acoplamento
-        const passadas = Math.max(1, Math.round(cargaCaminhao / toneladasPorConchada));
-        const cargaReal = passadas * toneladasPorConchada;
-        const fatorCarregamentoPct = (cargaReal / cargaCaminhao) * 100;
-        const tempoCargaMin = (passadas * cicloEscav) / 60;
-        const cicloTotalCaminhao = CICLO_TRANSP_MIN + tempoCargaMin;
-        const viagensHoraPorCaminhao = (60 / cicloTotalCaminhao) * (eficTranspBase * fatorPisoTransp);
-        const prodPorCaminhaoTH = viagensHoraPorCaminhao * cargaReal;
-        const camNominal = Math.ceil(RITMO_ALVO_TH / prodPorCaminhaoTH);
-        const qtdCaminhoes = Math.ceil((RITMO_ALVO_TH / prodPorCaminhaoTH) * fatorContingencia);
-
-        // Match Factor (Fator de Acoplamento real da frota nominal)
-        const matchFactor = (camNominal * tempoCargaMin) / (escavNominal * cicloTotalCaminhao);
-        const caminhoesPorEscavadeira = (qtdCaminhoes / qtdEscavadeiras).toFixed(1);
-
-        // Controla visibilidade do Memorial Técnico (mostra na sugestão, oculta na simulação manual)
-        const memorialDiv = document.getElementById('memorial-sugestao');
-        if (criterioSugestao) {
-            memorialDiv.style.display = 'block';
-            document.getElementById('memorial-sugestao-grid').innerHTML = `
-                <div class="memorial-item">
-                    <small>Critério de Seleção</small>
-                    <strong>${criterioSugestao}</strong>
-                </div>
-                <div class="memorial-item">
-                    <small>Massa por Passe (${(fatorEnchimento * 100).toFixed(0)}% ench.)</small>
-                    <strong>${toneladasPorConchada.toFixed(2)} t / conchada</strong>
-                </div>
-                <div class="memorial-item">
-                    <small>Carregamento do Caminhão</small>
-                    <strong>${passadas} passes = ${cargaReal.toFixed(1)} t (${fatorCarregamentoPct.toFixed(0)}%)</strong>
-                </div>
-                <div class="memorial-item">
-                    <small>Tempo de Carga + Manobra</small>
-                    <strong>${tempoCargaMin.toFixed(2)} min / caminhão</strong>
-                </div>
-            `;
-        } else {
-            memorialDiv.style.display = 'none';
-        }
-
-        // 3. Soma Total de KM Rodados pela Frota
-        const kmPorViagem = DIST_IDA_KM + DIST_VOLTA_KM;
-        const viagensTotaisHora = RITMO_ALVO_TH / cargaReal;
-        const kmTotalHora = viagensTotaisHora * kmPorViagem;
-        const kmTotalAno = kmTotalHora * HORAS_UTEIS_ANO;
-
-        // 4. Motoniveladora e Trator de Esteiras
-        const qtdPatrol = Math.max(1, Math.ceil(Math.max(extensaoPista / divisorPatrolKm, qtdCaminhoes / 7)));
-        const qtdTrator = Math.max(1, qtdEscavadeiras + extraTrator);
-
-        // 5. Diagnóstico Técnico de Engenharia & Compatibilidade
-        const alertas = [];
-        if (passadas > 5) {
-            alertas.push(`⚠️ <strong>Acoplamento Carga/Transporte (${passadas} passes):</strong> Acima da faixa ideal (3 a 5 conchadas). Risco de fila de caminhões na praça; avalie aumentar a caçamba da escavadeira.`);
-        } else if (passadas < 3) {
-            alertas.push(`⚠️ <strong>Acoplamento Carga/Transporte (${passadas} passes):</strong> Abaixo de 3 conchadas. Risco de impacto excessivo na báscula e subutilização da escavadeira.`);
-        } else {
-            alertas.push(`✅ <strong>Acoplamento Carga/Transporte (${passadas} passes):</strong> Dentro da faixa ideal de engenharia (3 a 5 conchadas por caminhão, atingindo ${fatorCarregamentoPct.toFixed(1)}% da carga útil).`);
-        }
-
-        if (fatorCarregamentoPct > 110) {
-            alertas.push(`🚨 <strong>Sobrecarga na Báscula (${fatorCarregamentoPct.toFixed(0)}% da carga útil):</strong> ${passadas} passes totalizam ${cargaReal.toFixed(1)} t para um caminhão de ${cargaCaminhao} t. Reduza a caçamba ou aumente o porte do caminhão.`);
-        }
-
-        if (matchFactor < 0.50) {
-            alertas.push(`⚠️ <strong>Escavadeira Superdimensionada (Ociosidade ${((1 - matchFactor) * 100).toFixed(0)}%):</strong> A capacidade da escavadeira (${prodEscavadeiraTH.toFixed(0)} t/h) é muito superior à demanda do transporte (${(qtdCaminhoes * prodPorCaminhaoTH).toFixed(0)} t/h). Utilize uma escavadeira de menor porte.`);
-        }
-
-        if (/\b(336|320|323|pc200|pc210|pc240|ec210|ec220)\b/i.test(modEscav) && cacamba > 4.0) {
-            alertas.push(`🚨 <strong>Incompatibilidade de Caçamba:</strong> O modelo informado (${modEscav}) é de porte médio e não comporta caçamba de ${cacamba} m³ (classe mineração pesada).`);
-        }
-
-        if (cargaCaminhao >= 60 && /\b(140|120|670|rg140)\b/i.test(modPatrol)) {
-            alertas.push(`🚨 <strong>Motoniveladora Subdimensionada:</strong> Caminhões de ${cargaCaminhao} t exigem patrol pesada (classe Cat 16M / 24M) para largura de leira e coroamento de pista; a ${modPatrol} é fraca para esse porte.`);
-        }
-
-        if (cargaCaminhao >= 60 && /\b(d5|d6|d6t|d61|d65)\b/i.test(modTrator)) {
-            alertas.push(`🚨 <strong>Trator Subdimensionado:</strong> Pilhas descarregadas por caminhões de ${cargaCaminhao} t exigem trator pesado (classe Cat D8T / D9) no bota-fora; o ${modTrator} perderá rendimento.`);
-        }
-
-        if ((perfilPiso === 'argila' || perfilPiso === 'movedico') && cargaCaminhao >= 60) {
-            alertas.push(`⚠️ <strong>Alerta Geotécnico (${nomePiso}):</strong> Operação com fora-de-estrada pesado exige revestimento primário (cascalhamento) e drenagem contínua para evitar atolamento e perda de ciclo.`);
-        }
-
-        document.getElementById('resumo-km-terreno').innerHTML = `
-            <strong>Condição Operacional:</strong> ${nomePiso} |
-            <strong>Margem de Falha:</strong> +${margemFalhaPct}% |
-            <strong>Rodagem Total da Frota:</strong> ${kmTotalHora.toFixed(1)} km/h
-            (${kmTotalAno.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} km/ano em ${kmPorViagem.toFixed(1)} km/ciclo)
-        `;
-
-        const container = document.getElementById('cards-resultado-frota');
-        container.innerHTML = `
-            <div class="card-stat">
-                <div class="title">Escavadeiras</div>
-                <div class="value">${qtdEscavadeiras}</div>
-                <div class="unit">Nominal: ${escavNominal} | ${prodEscavadeiraTH.toFixed(1)} t/h (${toneladasPorConchada.toFixed(1)} t/passe)</div>
-            </div>
-            <div class="card-stat">
-                <div class="title">Caminhões</div>
-                <div class="value">${qtdCaminhoes}</div>
-                <div class="unit">Nominal: ${camNominal} | ${prodPorCaminhaoTH.toFixed(1)} t/h (${passadas} passes)</div>
-            </div>
-            <div class="card-stat">
-                <div class="title">Motoniveladoras</div>
-                <div class="value">${qtdPatrol}</div>
-                <div class="unit">pista ${extensaoPista} km (${nomePiso.split('/')[0].trim()})</div>
-            </div>
-            <div class="card-stat">
-                <div class="title">Tratores de Esteiras</div>
-                <div class="value">${qtdTrator}</div>
-                <div class="unit">apoio praça / bota-fora</div>
-            </div>
-        `;
-
-        let statusMF = 'Equilibrado (0.95 a 1.05)';
-        let classeMF = 'mf-ok';
-        if (matchFactor < 0.95) {
-            statusMF = 'Subdimensionado (< 0.95 — escavadeira aguarda caminhão)';
-            classeMF = 'mf-alerta';
-        } else if (matchFactor > 1.05) {
-            statusMF = 'Saturado (> 1.05 — formação de fila na frente de lavra)';
-            classeMF = 'mf-saturado';
-        }
-
-        document.getElementById('indicadores-acoplamento').innerHTML = `
-            <div class="acoplamento-grid">
-                <div>
-                    <span class="label-indicador">Match Factor (Acoplamento):</span>
-                    <strong class="valor-indicador ${classeMF}">${matchFactor.toFixed(2)} — ${statusMF}</strong>
-                </div>
-                <div>
-                    <span class="label-indicador">Distribuição por Frente de Lavra:</span>
-                    <strong class="valor-indicador">~${caminhoesPorEscavadeira} caminhões / escavadeira</strong>
-                </div>
-                <div>
-                    <span class="label-indicador">Capacidade Instalada Total:</span>
-                    <strong class="valor-indicador destaque-ritmo">${(qtdEscavadeiras * prodEscavadeiraTH).toFixed(0)} t/h (Carga) | ${(qtdCaminhoes * prodPorCaminhaoTH).toFixed(0)} t/h (Transp.)</strong>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('diagnostico-engenharia').innerHTML = `
-            <div class="diagnostico-box">
-                <div class="diagnostico-titulo">Diagnóstico Técnico de Engenharia & Compatibilidade</div>
-                <ul class="diagnostico-lista">
-                    ${alertas.map(item => `<li>${item}</li>`).join('')}
-                </ul>
-            </div>
-        `;
-
-        document.getElementById('bloco-resultado-frota').style.display = 'block';
-    }
-</script>
+<script src="{{ url_for('static', filename='dimensionamento_frota.js') }}"></script>
 
 </body>
 </html>
