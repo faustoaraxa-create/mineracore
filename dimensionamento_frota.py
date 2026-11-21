@@ -6,7 +6,8 @@ Responsável por:
 3. Dimensionamento de Infraestrutura e Apoio (/dimensionamento_infra)
 4. Endpoints API em Python para cálculos de frota e infraestrutura (/api/*)
 
-Toda a regra de negócio e matemática permanece concentrada aqui no backend Python.
+Toda a regra de negócio e matemática permanece concentrada aqui no backend Python,
+com sugestões calibradas por classe operacional e sem menção a marcas comerciais.
 """
 
 import math
@@ -47,32 +48,41 @@ REGRAS_PISO = {
     'movedico': {'nome': 'Terreno Movediço / Instável', 'curto': 'Movediço', 'enchimento': 84, 'fator_ciclo': 1.15},
 }
 
-# Presets de frota primária ordenados do maior ritmo horário (t/h) para o menor
+# Presets de frota primária ordenados do maior ritmo horário (t/h) para o menor (sem marcas comerciais)
 PRESETS_FROTA = [
     {
+        'min_th': 3000.0,
+        'escav': 'Escavadeira Hidráulica Ultra-Pesada (~12,0 m³)',
+        'cacamba': 12.0,
+        'ciclo': 26.0,
+        'cam': 'Caminhão Fora-de-Estrada Rígido (Classe 180–190 t)',
+        'carga': 186.0,
+        'criterio': 'Ritmo ultra-elevado (>= 3.000 t/h): frota de mineração de grande porte.'
+    },
+    {
         'min_th': 1500.0,
-        'escav': 'HITACHI EX1200 / CAT 6015B',
+        'escav': 'Escavadeira Hidráulica de Grande Porte (~6,7 m³)',
         'cacamba': 6.7,
         'ciclo': 24.0,
-        'cam': 'CAT 777F',
+        'cam': 'Caminhão Fora-de-Estrada Rígido (Classe 100 t)',
         'carga': 96.0,
-        'criterio': 'Ritmo elevado (>= 1.500 t/h): alta capacidade de carga e transporte.'
+        'criterio': 'Ritmo elevado (1.500 a 2.999 t/h): alta capacidade de carga e transporte fora de estrada.'
     },
     {
         'min_th': 600.0,
-        'escav': 'CAT 390F / VOLVO EC750E',
+        'escav': 'Escavadeira Hidráulica de Médio/Grande Porte (~5,4 m³)',
         'cacamba': 5.4,
         'ciclo': 22.0,
-        'cam': 'CAT 745 / VOLVO A45G',
+        'cam': 'Caminhão Articulado / Fora-de-Estrada (Classe 40–45 t)',
         'carga': 41.0,
-        'criterio': 'Ritmo médio-alto (600 a 1.499 t/h): escavadeira de grande porte e caminhões articulados/fora-de-estrada.'
+        'criterio': 'Ritmo médio-alto (600 a 1.499 t/h): escavadeira intermediária e caminhões articulados/fora-de-estrada.'
     },
     {
         'min_th': 0.0,
-        'escav': 'CAT 336 / KOMATSU PC360',
+        'escav': 'Escavadeira Hidráulica de Porte Médio (~2,1 m³)',
         'cacamba': 2.1,
         'ciclo': 20.0,
-        'cam': 'SCANIA G460 / VOLVO FMX 8x4',
+        'cam': 'Caminhão Basculante Pesado 8x4 (Classe 32 t)',
         'carga': 32.0,
         'criterio': 'Ritmo moderado (< 600 t/h): equilíbrio operacional para frentes de menor porte.'
     },
@@ -134,7 +144,6 @@ def _obter_regra_piso(chave_piso):
 
 def _classificar_piso_texto(nome_piso):
     """
-    [UTILITÁRIO COMPARTILHADO ENTRE FROTA E INFRAESTRUTURA]
     Identifica a chave interna do piso ('rocha', 'argila', 'movedico' ou 'cascalho')
     a partir da descrição textual salva no cenário primário.
     """
@@ -174,9 +183,9 @@ def _calcular_preview_escavadeira(inputs, plano):
     prod_unit = (3600.0 / ciclo_seg) * (efic_escav_pct / 100.0) * massa_passe if ciclo_seg > 0 else 0.0
 
     if cacamba >= 12.0:
-        classe_porte = 'Mineração Pesada (200t+)'
+        classe_porte = 'Mineração Ultra-Pesada (200t+)'
     elif cacamba >= 6.0:
-        classe_porte = 'Mineração Média (90t–140t)'
+        classe_porte = 'Mineração Média/Pesada (90t–140t)'
     else:
         classe_porte = 'Apoio / Pequeno Porte (35t–50t)'
 
@@ -452,20 +461,13 @@ def _comparar_cenarios_producao(cenarios, plano):
 
 # =========================================================================
 # 5. MOTOR MATEMÁTICO DE INFRAESTRUTURA E APOIO (MÓDULO INFRA)
-#    Responsável por dimensionar:
-#    - Motoniveladora (Patrol) para manutenção de acessos e praças
-#    - Trator de Esteiras para limpeza de praça e conformação de bota-fora
-#    - Caminhão-Pipa para umectação e controle de poeira nas vias
-#    - Até 3 equipamentos extras adicionados pelo usuário
-#    - Consolidação total do efetivo da mina (Frota Primária + Frota de Apoio)
 # =========================================================================
 
 def _sugerir_infraestrutura_apoio(cenario, plano):
     """
     [INFRAESTRUTURA — SUGESTÃO AUTOMÁTICA DE EQUIPAMENTOS]
-    Chamada pelo botão 'Sugerir Infraestrutura Compatível com a Frota' (/api/sugerir_infra).
-    Analisa o porte dos caminhões, quantidade de escavadeiras e tipo de piso do cenário
-    selecionado para recomendar modelos e parâmetros iniciais de Patrol, Trator e Pipa.
+    Analisa a tonelagem real dos caminhões, quantidade de escavadeiras e tipo de piso
+    do cenário selecionado para recomendar portes compatíveis (sem marcas comerciais).
     """
     cenario = cenario or {}
     inputs_cenario = cenario.get('inputs') or {}
@@ -475,28 +477,35 @@ def _sugerir_infraestrutura_apoio(cenario, plano):
     carga_cam = parse_float(inputs_cenario.get('cargaCaminhao'), padrao=0.0, minimo=0.0)
     piso_chave = _classificar_piso_texto(cenario.get('nomePiso'))
 
-    # 1. Sugestão de porte da Motoniveladora (Patrol) conforme carga dos caminhões
-    if carga_cam >= 90 or qtd_cam >= 20:
-        mod_patrol = 'Cat 16M / 24M (Alta Capacidade)'
-    elif carga_cam >= 45 or qtd_cam >= 8:
-        mod_patrol = 'Cat 140M / 160M (Médio/Pesado)'
+    # 1. Sugestão de porte da Motoniveladora (Patrol) conforme tonelagem dos caminhões
+    if carga_cam >= 130:
+        mod_patrol = 'Porte Ultra-Pesado — Lâmina 24 pés (> 500 HP | Caminhões > 130 t)'
+    elif carga_cam >= 60 or qtd_cam >= 18:
+        mod_patrol = 'Porte Pesado — Lâmina 16 pés (~300–350 HP | Caminhões 60–120 t)'
+    elif carga_cam >= 40 or qtd_cam >= 8:
+        mod_patrol = 'Porte Médio/Pesado — Lâmina 14 a 16 pés (~250–300 HP)'
     else:
-        mod_patrol = 'Cat 140 / 160 (Manutenção Leve/Média)'
+        mod_patrol = 'Porte Médio — Lâmina 14 pés (~190–250 HP | Caminhões até 40 t)'
 
-    # 2. Sugestão de porte do Trator de Esteiras conforme porte da frota de carga
-    if carga_cam >= 90 or qtd_escav >= 4:
-        mod_trator = 'Cat D8T / D9 / Komatsu D155 (Pesado)'
-    elif carga_cam >= 45 or qtd_escav >= 2:
-        mod_trator = 'Cat D7 / D8T (Médio/Pesado)'
+    # 2. Sugestão de porte do Trator de Esteiras conforme porte da frota de carga/transporte
+    if carga_cam >= 130 or qtd_escav >= 4:
+        mod_trator = 'Trator de Esteiras Ultra-Pesado (> 550 HP | Alta Produção)'
+    elif carga_cam >= 60 or qtd_escav >= 3:
+        mod_trator = 'Trator de Esteiras Pesado (400–500 HP | Praça e Bota-Fora)'
+    elif carga_cam >= 40 or qtd_escav >= 2:
+        mod_trator = 'Trator de Esteiras Médio/Pesado (300–350 HP)'
     else:
-        mod_trator = 'Cat D6 / Komatsu D65 (Praça & Apoio)'
+        mod_trator = 'Trator de Esteiras Médio (~200–250 HP | Praça & Apoio)'
 
     # 3. Sugestão de capacidade do Caminhão-Pipa
-    if carga_cam >= 50:
-        mod_pipa = 'Pipa Fora-de-Estrada / 30.000 L'
+    if carga_cam >= 130:
+        mod_pipa = 'Caminhão-Pipa Fora-de-Estrada (50.000 L a 75.000 L)'
+        volume_pipa = 60000
+    elif carga_cam >= 50:
+        mod_pipa = 'Caminhão-Pipa Fora-de-Estrada (30.000 L)'
         volume_pipa = 30000
     else:
-        mod_pipa = 'Pipa Pesado 20.000 L–30.000 L'
+        mod_pipa = 'Caminhão-Pipa Pesado (20.000 L)'
         volume_pipa = 20000
 
     ciclo_pipa = 40 if piso_chave == 'rocha' else 45
@@ -513,16 +522,17 @@ def _sugerir_infraestrutura_apoio(cenario, plano):
 def _calcular_infraestrutura_apoio(dados, cenario, plano):
     """
     [INFRAESTRUTURA — CÁLCULO COMPLETO DA FROTA DE APOIO E CONSOLIDAÇÃO DA MINA]
-    Chamada pelo botão 'Calcular Frota de Apoio & Consolidado Total' (/api/calcular_infra).
     Executa toda a matemática de dimensionamento de Patrol, Trator, Pipa e Extras,
     soma ao efetivo primário (escavadeiras + caminhões) e gera os alertas técnicos.
     """
     cenario = cenario or {}
+    inputs_cenario = cenario.get('inputs') or {}
     dist_padrao = parse_float(plano.get('dist_ida'), padrao=1.0, minimo=0.1)
 
-    # Efetivo da frota primária herdada do comparativo
+    # Efetivo e porte da frota primária herdada do comparativo
     qtd_escav = int(parse_float(cenario.get('qtdEscavadeiras'), padrao=0, minimo=0))
     qtd_cam = int(parse_float(cenario.get('qtdCaminhoes'), padrao=0, minimo=0))
+    carga_cam = parse_float(inputs_cenario.get('cargaCaminhao'), padrao=0.0, minimo=0.0)
     qtd_primaria = qtd_escav + qtd_cam
 
     # Fatores geotécnicos e climáticos aplicados à infraestrutura
@@ -586,6 +596,14 @@ def _calcular_infraestrutura_apoio(dados, cenario, plano):
         ),
         f"💧 <strong>Supressão de Poeira:</strong> Demanda estimada de {round(demanda_agua_hora_l):,} L/h atendida por {qtd_pipa} caminhão(ões)-pipa ({int(volume_l):,} L).".replace(',', '.')
     ]
+
+    # Alerta de compatibilidade de porte da Patrol vs. Tonelagem do Caminhão
+    patrol_lower = modelo_patrol.lower()
+    if carga_cam >= 130 and any(cod in patrol_lower for cod in ('14', '16', '140', '160')):
+        alertas.insert(0, (
+            f"🚨 <strong>Subdimensionamento de Patrol:</strong> Caminhões de {carga_cam:.0f} t exigem largura de pista e esforço de corte compatíveis com "
+            f"motoniveladora <strong>Porte Ultra-Pesado (Lâmina 24 pés)</strong>."
+        ))
 
     for item in extras_validas:
         alertas.append(f"🛠️ <strong>{item['nome']}:</strong> {item['qtd']} unidade(s) adicionada(s) à frota de apoio.")
