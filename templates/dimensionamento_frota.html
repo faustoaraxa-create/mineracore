@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dimensionamento de Frota - Mineracore</title>
+    <!-- Token CSRF para validação segura das requisições fetch POST no Flask -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Dimensionamento de Carga e Transporte - Mineracore</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dimensionamento_frota.css') }}">
 </head>
 <body>
 
 <header class="no-print">
     <h1>MINERACORE</h1>
-    <p>Simulação e Dimensionamento de Frota Operacional (Carga, Transporte e Apoio)</p>
+    <p>Simulação e Dimensionamento de Frota de Carga e Transporte</p>
 </header>
 
 <main>
     <div class="relatorio-container">
 
-        <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
-        <div class="header-acoes no-print">
-            <a href="{{ url_for('planejamento_mensal_app.planejamento_mensal') }}" class="btn-voltar">← Voltar ao Planejamento</a>
-            <a href="{{ url_for('dashboard') }}" class="btn-imprimir">Painel Principal</a>
-        </div>
+        <!-- BARRA SUPERIOR DE NAVEGAÇÃO (limpa os cenários gravados ao sair da tela) -->
+        <nav class="header-acoes no-print">
+            <a href="{{ url_for('planejamento_mensal_app.planejamento_mensal') }}" class="btn-voltar js-limpar-ao-sair">← Voltar ao Planejamento</a>
+            <a href="{{ url_for('dashboard') }}" class="btn-imprimir js-limpar-ao-sair">Painel Principal</a>
+        </nav>
 
-        <h2>Dimensionamento de Frota: {{ plano.contrato }}</h2>
+        <h2>Dimensionamento de Carga e Transporte: {{ plano.contrato }}</h2>
 
-        <!-- =================================================================
-             BLOCO 1: PREMISSAS RECEBIDAS DO PLANEJAMENTO ANUAL (FLASK/JINJA)
-             ================================================================= -->
+        <!-- BLOCO 1: PREMISSAS HERDADAS DO PLANEJAMENTO ANUAL -->
         <fieldset>
             <legend>Premissas Herdadas do Plano Operacional</legend>
 
@@ -49,16 +49,14 @@
             </div>
         </fieldset>
 
-        <!-- =================================================================
-             BLOCO 2: CONDIÇÕES GEOTÉCNICAS E PARÂMETROS DOS EQUIPAMENTOS
-             ================================================================= -->
-        <fieldset>
+        <!-- BLOCO 2: CONDIÇÕES GEOTÉCNICAS E EQUIPAMENTOS (CARGA & TRANSPORTE) -->
+        <fieldset id="form-dimensionamento">
             <legend>Condições de Piso, Contingência e Equipamentos</legend>
 
             <div class="subgrid-2 linha-separadora">
                 <div class="campo-grupo">
                     <label for="perfil_piso">Perfil Geotécnico / Condição do Piso:</label>
-                    <select id="perfil_piso" onchange="atualizarFatorEnchimentoPiso()">
+                    <select id="perfil_piso">
                         <option value="cascalho">Cascalho Compactado / Seco (Padrão - Enchimento 90%)</option>
                         <option value="argila">Argiloso / Escorregadio (-15% aderência/velocidade)</option>
                         <option value="movedico">Terreno Movediço / Bota-Fora Instável (-22% tração)</option>
@@ -68,13 +66,14 @@
 
                 <div class="campo-grupo">
                     <label for="margem_falha">Margem de Falha / Reserva Técnica (%):</label>
-                    <input type="number" id="margem_falha" step="1" min="0" max="50" value="10" placeholder="Ex: 10 (para +10% reserva)">
+                    <input type="number" id="margem_falha" step="1" min="0" max="50" value="10" placeholder="Ex: 10">
                 </div>
             </div>
 
-            <div class="frota-grid-2x2">
+            <!-- GRID DE 2 COLUNAS: ESCAVADEIRA E CAMINHÕES -->
+            <div class="subgrid-2">
 
-                <!-- 1. EQUIPAMENTO DE CARGA (ESCAVADEIRA) -->
+                <!-- 1. CARGA -->
                 <div class="card-equipamento">
                     <div class="card-equipamento-header">
                         <span class="titulo-eq">1. Escavadeira (Equipamento de Carga)</span>
@@ -83,28 +82,28 @@
 
                     <div class="campo-grupo">
                         <label for="modelo_escavadeira">Modelo / Classe da Escavadeira:</label>
-                        <input type="text" id="modelo_escavadeira" placeholder="Ex: Cat 6020B / Komatsu PC2000 (Classe 200t)" oninput="atualizarPreviewEscavadeira()">
+                        <input type="text" id="modelo_escavadeira" data-preview="escav" placeholder="Ex: Hitachi EX2500 / Cat 6020B (15 m³)">
                     </div>
 
                     <div class="subgrid-2">
                         <div class="campo-grupo">
                             <label for="cacamba_m3">Caçamba Coroada (m³):</label>
-                            <input type="number" id="cacamba_m3" step="0.1" min="0.1" placeholder="Ex: 14.0" oninput="atualizarPreviewEscavadeira()">
+                            <input type="number" id="cacamba_m3" data-preview="escav" step="0.1" min="0.1" placeholder="Ex: 15.0">
                         </div>
                         <div class="campo-grupo">
                             <label for="fator_enchimento_pct">Fator Enchimento (%):</label>
-                            <input type="number" id="fator_enchimento_pct" step="1" min="50" max="115" value="90" oninput="atualizarPreviewEscavadeira()">
+                            <input type="number" id="fator_enchimento_pct" data-preview="escav" step="1" min="50" max="115" value="90">
                         </div>
                     </div>
 
                     <div class="subgrid-2">
                         <div class="campo-grupo">
                             <label for="ciclo_escav_seg">Tempo de Ciclo (seg):</label>
-                            <input type="number" id="ciclo_escav_seg" step="1" min="1" placeholder="Ex: 28" oninput="atualizarPreviewEscavadeira()">
+                            <input type="number" id="ciclo_escav_seg" data-preview="escav" step="1" min="1" placeholder="Ex: 28">
                         </div>
                         <div class="campo-grupo">
                             <label for="efic_escav">Eficiência Operacional (%):</label>
-                            <input type="number" id="efic_escav" step="1" min="1" max="100" value="83" oninput="atualizarPreviewEscavadeira()">
+                            <input type="number" id="efic_escav" data-preview="escav" step="1" min="1" max="100" value="83">
                         </div>
                     </div>
 
@@ -114,7 +113,7 @@
                     </div>
                 </div>
 
-                <!-- 2. FROTA DE TRANSPORTE (CAMINHÕES) -->
+                <!-- 2. TRANSPORTE -->
                 <div class="card-equipamento">
                     <div class="card-equipamento-header">
                         <span class="titulo-eq">2. Caminhões (Frota de Transporte)</span>
@@ -123,7 +122,7 @@
 
                     <div class="campo-grupo">
                         <label for="modelo_caminhao">Modelo do Caminhão:</label>
-                        <input type="text" id="modelo_caminhao" placeholder="Ex: Cat 777 / Komatsu HD785 (100t)">
+                        <input type="text" id="modelo_caminhao" placeholder="Ex: Cat 777F / Komatsu HD785 (100t)">
                     </div>
 
                     <div class="subgrid-2">
@@ -143,117 +142,65 @@
                     </div>
                 </div>
 
-                <!-- 3. INFRAESTRUTURA DE PISTAS (MOTONIVELADORA) -->
-                <div class="card-equipamento">
-                    <div class="card-equipamento-header">
-                        <span class="titulo-eq">3. Motoniveladora (Manutenção de Pistas)</span>
-                        <span class="badge-classe">Infraestrutura</span>
-                    </div>
-
-                    <div class="subgrid-2">
-                        <div class="campo-grupo">
-                            <label for="modelo_patrol">Modelo da Motoniveladora:</label>
-                            <input type="text" id="modelo_patrol" placeholder="Ex: Cat 16M / 24M">
-                        </div>
-                        <div class="campo-grupo">
-                            <label for="extensao_pista_km">Extensão Total de Pista (km):</label>
-                            <input type="number" id="extensao_pista_km" step="0.1" min="0" value="{{ plano.dist_ida }}">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. APOIO DE PRAÇA E PILHA (TRATOR DE ESTEIRAS) -->
-                <div class="card-equipamento">
-                    <div class="card-equipamento-header">
-                        <span class="titulo-eq">4. Trator de Esteiras (Praça e Pilha)</span>
-                        <span class="badge-classe">Apoio Lavra</span>
-                    </div>
-
-                    <div class="subgrid-2">
-                        <div class="campo-grupo">
-                            <label for="modelo_trator">Modelo do Trator:</label>
-                            <input type="text" id="modelo_trator" placeholder="Ex: Cat D8T / D9">
-                        </div>
-                        <div class="campo-grupo">
-                            <label for="tipo_servico_trator">Atividade Principal:</label>
-                            <select id="tipo_servico_trator">
-                                <option value="apoio_praca">Apoio de Praça e Bota-Fora</option>
-                                <option value="escarificacao">Escarificação / Decapeamento</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- MEMORIAL TÉCNICO EXIBIDO QUANDO O USUÁRIO USA A SUGESTÃO AUTOMÁTICA -->
-            <div class="memorial-sugestao" id="memorial-sugestao">
-                <div class="memorial-titulo">
-                    📐 Memorial Técnico da Frota Sugerida (Critério de Engenharia)
-                </div>
+            <!-- MEMORIAL TÉCNICO DA SUGESTÃO -->
+            <div class="memorial-sugestao ocultar" id="memorial-sugestao">
+                <div class="memorial-titulo">📐 Memorial Técnico da Frota Sugerida (Critério de Engenharia)</div>
                 <div class="memorial-grid" id="memorial-sugestao-grid"></div>
             </div>
 
             <!-- BOTÕES DE AÇÃO -->
             <div class="acoes-simulacao no-print">
-                <button type="button" class="btn-voltar btn-sugerir" onclick="sugerirFrotaCompativel()">
+                <button type="button" id="btn-sugerir-frota" class="btn-voltar btn-sugerir">
                     💡 Sugerir Frota Compatível para {{ "{:,.0f}".format(plano.ritmo_hora) }} t/h
                 </button>
-                <button type="button" class="btn-proximo" onclick="simularFrota()">⚙️ Simular Frota Ideal</button>
+                <button type="button" id="btn-simular-frota" class="btn-proximo">⚙️ Simular Frota Ideal</button>
             </div>
         </fieldset>
 
-        <!-- =================================================================
-             BLOCO 3: RESULTADO DA SIMULAÇÃO ATUAL E GRAVAÇÃO EM CACHE
-             ================================================================= -->
-        <fieldset id="bloco-resultado-frota" style="display: none;">
-            <legend>Resultado do Dimensionamento da Frota</legend>
+        <!-- BLOCO 3: RESULTADO DA SIMULAÇÃO ATUAL -->
+        <fieldset id="bloco-resultado-frota" class="ocultar">
+            <legend>Resultado do Dimensionamento (Carga e Transporte)</legend>
 
             <div id="resumo-km-terreno" class="resumo-terreno-box"></div>
-            <div class="cards-grid" id="cards-resultado-frota"></div>
+            <div class="subgrid-2" id="cards-resultado-frota"></div>
             <div id="indicadores-acoplamento" class="painel-acoplamento"></div>
             <div id="diagnostico-engenharia" class="painel-diagnostico"></div>
 
             <div class="barra-salvar-cenario no-print">
-                <input type="text" id="nome_cenario" placeholder="Nome da opção (Ex: Opção 1 - Frota 100t)">
-                <button type="button" class="btn-voltar btn-sugerir" onclick="salvarCenarioCache()">
+                <input type="text" id="nome_cenario" placeholder="Nome da opção (Ex: Opção 1 - 777F 100t)">
+                <button type="button" id="btn-salvar-cenario" class="btn-voltar btn-sugerir">
                     💾 Gravar Opção para Confronto (Máx. 2)
                 </button>
-                <span id="feedback-cenario" style="color: #4ade80; font-size: 0.85rem; font-weight: 600;"></span>
+                <span id="feedback-cenario" class="feedback-sucesso"></span>
             </div>
         </fieldset>
 
-        <!-- =================================================================
-             BLOCO 4: ATALHO PARA PÁGINA EXECUTIVA DE COMPARAÇÃO (MÁX. 2 OPÇÕES)
-             ================================================================= -->
-        <fieldset id="bloco-comparativo-cenarios" style="display: none;">
+        <!-- BLOCO 4: CONFRONTO TÉCNICO ENTRE OPÇÕES GRAVADAS -->
+        <fieldset id="bloco-comparativo-cenarios" class="ocultar">
             <legend>Opções Gravadas para Confronto Técnico (Máx. 2 Opções)</legend>
 
             <div class="header-comparativo no-print">
-                <span class="info-cache" id="resumo-cenarios-gravados">
-                    0 de 2 opções gravadas neste contrato.
-                </span>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <a href="{{ url_for('frota_bp.comparativo_frota') }}" target="_blank" class="btn-proximo" style="text-decoration: none; padding: 9px 18px; font-size: 0.9rem;">
+                <span class="info-cache" id="resumo-cenarios-gravados">0 de 2 opções gravadas neste contrato.</span>
+                <div class="grupo-acoes-comparativo">
+                    <a href="{{ url_for('frota_bp.comparativo_frota') }}" target="_blank" class="btn-proximo btn-comparativo-link">
                         📊 Abrir Comparativo em Nova Página ↗
                     </a>
-                    <button type="button" class="btn-limpar-cache" onclick="limparCenariosCache()">
-                        🗑️ Limpar Opções
-                    </button>
+                    <button type="button" id="btn-limpar-cenarios" class="btn-limpar-cache">🗑️ Limpar Opções</button>
                 </div>
             </div>
 
-            <div id="lista-mini-cenarios" class="subgrid-2" style="margin-top: 10px;"></div>
+            <div id="lista-mini-cenarios" class="subgrid-2 margin-top-sm"></div>
         </fieldset>
 
     </div>
 </main>
 
-<script id="plano-data" type="application/json">
-    {{ plano | tojson | safe }}
-</script>
-
-<script src="{{ url_for('static', filename='dimensionamento_frota.js') }}"></script>
+<!-- Dados serializados do plano operacional para leitura inicial do frontend -->
+<script id="plano-data" type="application/json">{{ plano | tojson | safe }}</script>
+<!-- Apenas o script de interface e comunicação com as APIs Python -->
+<script src="{{ url_for('static', filename='js/dimensionamento_frota.js') }}"></script>
 
 </body>
 </html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Token CSRF obrigatório para requisições fetch POST no backend Flask -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Dimensionamento de Infraestrutura e Apoio - Mineracore</title>
+    <!-- Folha de estilos específica do módulo de infraestrutura e apoio -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dimensionamento_infra.css') }}?v=5">
+</head>
+<body>
+
+<!-- Cabeçalho institucional (oculto na impressão/PDF) -->
+<header class="no-print">
+    <h1>MINERACORE</h1>
+    <p>Engenharia de Infraestrutura de Mina: Motoniveladoras, Tratores de Esteiras e Caminhões-Pipa</p>
+</header>
+
+<main>
+    <div class="infra-container">
+
+        <!-- Barra superior de navegação e exportação/impressão -->
+        <nav class="header-acoes no-print">
+            <button type="button" id="btn-fechar-infra" class="btn-voltar">← Fechar Aba e Voltar</button>
+            <button type="button" id="btn-imprimir-infra" class="btn-imprimir">🖨️ Imprimir / Salvar PDF</button>
+        </nav>
+
+        <!-- Título dinâmico com o nome do contrato ativo no plano -->
+        <h2>Dimensionamento de Infraestrutura & Apoio: {{ plano.contrato }}</h2>
+
+        <!-- ===================================================================
+             1. PREMISSAS DO CONTRATO + FROTA PRIMÁRIA SELECIONADA NO COMPARATIVO
+             =================================================================== -->
+        <fieldset>
+            <legend>1. Contexto Operacional & Frota Primária Selecionada</legend>
+
+            <div class="grid-premissas">
+                <div class="item-herdado">
+                    <small>Material / Densidade Solta</small>
+                    <strong>{{ plano.material }} ({{ "%.2f"|format(plano.densidade / plano.empolamento) }} t/m³)</strong>
+                </div>
+                <div class="item-herdado">
+                    <small>Ritmo Alvo de Produção</small>
+                    <strong class="destaque-verde">{{ "{:,.2f}".format(plano.ritmo_hora) }} t/h</strong>
+                </div>
+                <div class="item-herdado">
+                    <small>Distância Média de Transporte</small>
+                    <strong>{{ plano.dist_ida }} km ida / {{ plano.dist_volta }} km volta</strong>
+                </div>
+                <div class="item-herdado">
+                    <small>Regime Anual Útil</small>
+                    <strong>{{ plano.total_horas_uteis }} h/ano ({{ plano.horas_dia }} h/dia)</strong>
+                </div>
+            </div>
+
+            <!-- Banner preenchido pelo JS com o cenário primário salvo no localStorage -->
+            <div id="banner-frota-herdada" class="banner-frota-herdada">
+                <div class="banner-frota-topo">
+                    <span class="banner-frota-titulo" id="titulo-cenario-herdado">
+                        Carregando cenário selecionado no comparativo...
+                    </span>
+                    <span class="badge-cenario-ativo" id="badge-piso-herdado">Piso: --</span>
+                </div>
+
+                <!-- Cards de resumo da frota primária (Escavadeiras, Caminhões, DMT e Match Factor) -->
+                <div class="grid-herdado-itens" id="detalhes-cenario-herdado"></div>
+            </div>
+        </fieldset>
+
+        <!-- ===================================================================
+             2. PARÂMETROS DOS EQUIPAMENTOS DE INFRAESTRUTURA E APOIO
+             =================================================================== -->
+        <fieldset>
+            <legend>2. Configuração da Frota de Infraestrutura & Apoio</legend>
+
+            <div class="grid-infra-3">
+
+                <!-- 1. MOTONIVELADORA (MANUTENÇÃO DE PISTAS E PRAÇAS) -->
+                <div class="card-infra">
+                    <div class="card-infra-header">
+                        <span class="titulo-eq">1. Motoniveladora (Patrol)</span>
+                        <span class="badge-porte" id="badge-porte-patrol">Manutenção de Vias</span>
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="modelo_patrol">Modelo / Porte</label>
+                        <input type="text" id="modelo_patrol" placeholder="Ex: Cat 16M / 24M">
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="extensao_pista_km">Extensão Total de Vias Mantidas (km)</label>
+                        <input type="number" id="extensao_pista_km" step="0.1" min="0.1" value="{{ plano.dist_ida }}">
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="efic_patrol">Eficiência Operacional (%)</label>
+                        <input type="number" id="efic_patrol" step="1" min="50" max="100" value="80">
+                    </div>
+
+                    <div class="nota-tecnica-card">
+                        Dimensionada pela extensão das vias, condição geotécnica do piso e fluxo horário de caminhões.
+                    </div>
+                </div>
+
+                <!-- 2. TRATOR DE ESTEIRAS (PRAÇA DE CARGA E BOTA-FORA) -->
+                <div class="card-infra">
+                    <div class="card-infra-header">
+                        <span class="titulo-eq">2. Trator de Esteiras</span>
+                        <span class="badge-porte" id="badge-porte-trator">Praça & Bota-Fora</span>
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="modelo_trator">Modelo / Porte</label>
+                        <input type="text" id="modelo_trator" placeholder="Ex: Cat D8T / D9">
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="frentes_bota_fora">Frentes de Descarga / Bota-Fora Ativas</label>
+                        <input type="number" id="frentes_bota_fora" step="1" min="1" max="10" value="1">
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="efic_trator">Eficiência Operacional (%)</label>
+                        <input type="number" id="efic_trator" step="1" min="50" max="100" value="80">
+                    </div>
+
+                    <div class="nota-tecnica-card">
+                        Atende limpeza de praça das escavadeiras e empurre/conformação de pilhas no bota-fora.
+                    </div>
+                </div>
+
+                <!-- 3. CAMINHÃO-PIPA (UMECTAÇÃO E CONTROLE DE POEIRA) -->
+                <div class="card-infra">
+                    <div class="card-infra-header">
+                        <span class="titulo-eq">3. Caminhão-Pipa</span>
+                        <span class="badge-porte" id="badge-porte-pipa">Controle de Poeira</span>
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="modelo_pipa">Modelo / Capacidade do Tanque</label>
+                        <input type="text" id="modelo_pipa" placeholder="Ex: Pipa 30.000 L (773 / FMX)">
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="capacidade_pipa_l">Volume do Tanque (Litros)</label>
+                        <input type="number" id="capacidade_pipa_l" step="1000" min="5000" value="30000">
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label for="ciclo_reabastecimento_min">Tempo Ciclo Umectação + Captação (min)</label>
+                        <input type="number" id="ciclo_reabastecimento_min" step="1" min="10" value="45">
+                    </div>
+
+                    <div class="nota-tecnica-card">
+                        Garante supressão de particulados, visibilidade nas vias e atendimento às normas ambientais.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Equipamentos adicionais criados pelo usuário (até 3 caixas via botão "+") -->
+            <div class="card-infra" style="margin-top: 16px;">
+                <div class="card-infra-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                    <div>
+                        <span class="titulo-eq">Equipamentos Criados pelo Usuário (Pode acrescentar até 3)</span>
+                        <span class="badge-porte" id="contador-extras-infra" style="margin-left: 8px;">0 / 3 adicionados</span>
+                    </div>
+                    <button type="button" id="btn-add-extra-infra" class="btn-sugerir-infra no-print" style="padding: 6px 14px; font-weight: bold;">
+                        + Acrescentar Máquina (até 3)
+                    </button>
+                </div>
+
+                <!-- Caixas extras criadas dinamicamente pelo JS ao clicar no botão "+" -->
+                <div id="lista-extras-infra"></div>
+            </div>
+
+            <!-- Botões de ação: sugestão automática e cálculo do consolidado -->
+            <div class="acoes-infra no-print">
+                <button type="button" id="btn-sugerir-infra" class="btn-sugerir-infra">
+                    ✨ Sugerir Infraestrutura Compatível com a Frota
+                </button>
+                <button type="button" id="btn-calcular-infra" class="btn-calcular-infra">
+                    🚜 Calcular Frota de Apoio & Consolidado Total ➔
+                </button>
+            </div>
+        </fieldset>
+
+        <!-- ===================================================================
+             3. RESULTADO DA INFRAESTRUTURA + CONSOLIDADO GERAL DA MINA
+             =================================================================== -->
+        <fieldset id="bloco-resultado-infra" class="ocultar">
+            <legend>3. Resultado de Infraestrutura & Consolidação Geral da Mina</legend>
+
+            <div id="cards-resultado-infra" class="grid-resultados-infra"></div>
+            <div id="painel-consolidado-mina" class="painel-consolidado-mina"></div>
+            <div id="diagnostico-infra"></div>
+        </fieldset>
+
+    </div>
+</main>
+
+<!-- Dados do plano operacional enviados pelo Flask -->
+<script id="plano-data" type="application/json">{{ plano | tojson | safe }}</script>
+
+<!-- Controlador de interface (toda a matemática é executada nas rotas /api/* do Python) -->
+<script src="{{ url_for('static', filename='js/dimensionamento_infra.js') }}?v=6"></script>
+
+</body>
+</html>

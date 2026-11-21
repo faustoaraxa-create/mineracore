@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plano Operacional Anual - Mineracore</title>
+    <!-- Folha de estilos principal do módulo de planejamento anual -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/planejamento_mensal.css') }}">
 </head>
 <body>
@@ -16,11 +17,15 @@
 <main>
     <div class="container-form">
         <h2>Parâmetros Completos do Plano Operacional</h2>
-        
-        <form action="/planejamento_mensal" method="POST" autocomplete="off">
+
+        <!-- Envia os parâmetros diretamente para o backend Python processar os cálculos -->
+        <form action="/planejamento_mensal" method="POST" autocomplete="off" id="form-plano">
+            <!-- Token CSRF obrigatório para validação segura no Flask -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            
-            <!-- Bloco 0: Identificação -->
+
+            <!-- =========================================================
+                 BLOCO 0: IDENTIFICAÇÃO DO CONTRATO / PROJETO
+                 ========================================================= -->
             <fieldset>
                 <legend>Identificação do Projeto / Contrato</legend>
                 <div class="form-group">
@@ -29,13 +34,16 @@
                 </div>
             </fieldset>
 
-            <!-- Bloco 1: Metas de Produção -->
+            <!-- =========================================================
+                 BLOCO 1: METAS DE PRODUÇÃO, MATERIAL E DENSIDADE
+                 ========================================================= -->
             <fieldset>
                 <legend>1. Metas de Produção, Tipo de Material e Densidade</legend>
-                
+
                 <div class="form-group">
                     <label for="tipo_material">Tipo de Material / Rocha:</label>
-                    <select id="tipo_material" name="tipo_material" required onchange="verificarMaterial()">
+                    <!-- A exibição do campo personalizado é controlada apenas pela interface em JS -->
+                    <select id="tipo_material" name="tipo_material" required>
                         <option value="" disabled selected>Selecione o material...</option>
                         <option value="itabirito">Itabirito Compacto / Minério de Ferro</option>
                         <option value="estoril">Estéril / Rocha Sã</option>
@@ -45,6 +53,7 @@
                     </select>
                 </div>
 
+                <!-- Campo exibido apenas quando o usuário escolhe "Outro / Personalizado" -->
                 <div class="form-group" id="div_material_custom" style="display:none;">
                     <label for="material_personalizado">Especifique o Nome do Material:</label>
                     <input type="text" id="material_personalizado" name="material_personalizado" maxlength="100" placeholder="Ex: Calcário / Minério Secundário" value="">
@@ -76,10 +85,12 @@
                 </div>
             </fieldset>
 
-            <!-- Bloco 2: Regime de Trabalho e Paradas -->
+            <!-- =========================================================
+                 BLOCO 2: REGIME DE TRABALHO, ESCALAS E PARADAS POR TURNO
+                 ========================================================= -->
             <fieldset>
                 <legend>2. Regime de Trabalho, Escalas e Paradas Operacionais</legend>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="escala_turno">Selecione a Escala / Jornada de Turno:</label>
@@ -98,7 +109,7 @@
 
                 <h3 class="sub-legend">Gestão de Paradas Operacionais por Turno</h3>
                 <p class="info-text">Informe a soma em minutos de cada parada dentro de CADA TURNO:</p>
-                
+
                 <div class="paradas-grid">
                     <div class="parada-item">
                         <label for="tempo_almoco">Almoço / Refeição Diurna (min):</label>
@@ -123,10 +134,12 @@
                 </div>
             </fieldset>
 
-            <!-- Bloco 3: Logística e Ciclo -->
+            <!-- =========================================================
+                 BLOCO 3: LOGÍSTICA E CICLO DE TRANSPORTE
+                 ========================================================= -->
             <fieldset>
                 <legend>3. Logística e Ciclo de Transporte</legend>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="distancia_ida">Distância de Ida (km):</label>
@@ -155,11 +168,13 @@
                 </div>
             </fieldset>
 
-            <!-- Bloco 4: Horas de Manutenção Preventiva/Corretiva Mensal -->
+            <!-- =========================================================
+                 BLOCO 4: MANUTENÇÃO MECÂNICA MENSAL (HORAS/MÊS)
+                 ========================================================= -->
             <fieldset>
                 <legend>4. Paradas para Manutenção Mecânica dos Equipamentos (Horas/Mês)</legend>
                 <p class="info-text">Informe a estimativa de horas de paralisação da praça de lavra para manutenções agendadas ou corretivas:</p>
-                
+
                 <div class="form-row-meses">
                     <div class="mes-input"><label>Janeiro</label><input type="number" name="maint_jan" value="" placeholder="0" step="0.5" min="0"></div>
                     <div class="mes-input"><label>Fevereiro</label><input type="number" name="maint_fev" value="" placeholder="0" step="0.5" min="0"></div>
@@ -176,11 +191,13 @@
                 </div>
             </fieldset>
 
-            <!-- Bloco 5: Horas de Chuva por Mês (Entrada Direta) -->
+            <!-- =========================================================
+                 BLOCO 5: PARALISAÇÃO POR CHUVA MENSAL (HORAS/MÊS)
+                 ========================================================= -->
             <fieldset>
                 <legend>5. Fatores Climáticos (Horas de Paralisação por Chuva por Mês)</legend>
                 <p class="info-text">Informe as horas estimadas de paralisação operacional devidas a precipitações pluviais:</p>
-                
+
                 <div class="form-row-meses">
                     <div class="mes-input"><label>Janeiro</label><input type="number" id="chuva_jan" name="chuva_jan" value="" placeholder="0" step="0.5" min="0"></div>
                     <div class="mes-input"><label>Fevereiro</label><input type="number" id="chuva_fev" name="chuva_fev" value="" placeholder="0" step="0.5" min="0"></div>
@@ -197,38 +214,14 @@
                 </div>
             </fieldset>
 
+            <!-- Botão de envio para processamento no backend Python -->
             <button type="submit" class="btn-calcular">Processar Plano Anual Completo</button>
-
         </form>
     </div>
 </main>
 
-<script>
-    function verificarMaterial() {
-        const select = document.getElementById('tipo_material');
-        const divCustom = document.getElementById('div_material_custom');
-        if (select.value === 'outro') {
-            divCustom.style.display = 'block';
-        } else {
-            divCustom.style.display = 'none';
-        }
-    }
-
-    window.onload = function() {
-        verificarMaterial();
-    }
-</script>
-
-<!-- Script para gerenciar o cache de histórico do navegador (botão Voltar) -->
-<script>
-    window.addEventListener('pageshow', function (event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            document.querySelectorAll('form').forEach(function (form) {
-                form.reset();
-            });
-        }
-    });
-</script>
+<!-- Script leve apenas para alternar campo visual de material personalizado -->
+<script src="{{ url_for('static', filename='planejamento_mensal.js') }}"></script>
 
 </body>
 </html>

@@ -1,6 +1,22 @@
 /* ==========================================================================
-   MINERACORE - CSS EXCLUSIVO: DIMENSIONAMENTO DE FROTA
+   MINERACORE - CSS EXCLUSIVO: DIMENSIONAMENTO DE CARGA E TRANSPORTE
    ========================================================================== */
+:root {
+    --bg-pagina: #0b1120;
+    --bg-painel: #0f172a;
+    --bg-card: #131c31;
+    --bg-elevado: #1e293b;
+    --borda-suave: #1e293b;
+    --borda-card: #26334d;
+    --borda-input: #334155;
+    --azul-destaque: #38bdf8;
+    --verde-destaque: #10b981;
+    --verde-texto: #4ade80;
+    --texto-branco: #f8fafc;
+    --texto-claro: #e2e8f0;
+    --texto-medio: #cbd5e1;
+    --texto-suave: #94a3b8;
+}
 
 * {
     box-sizing: border-box;
@@ -10,14 +26,17 @@
 
 body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #0b1120;
-    color: #e2e8f0;
+    background-color: var(--bg-pagina);
+    color: var(--texto-claro);
     line-height: 1.5;
 }
 
+/* ==========================================================================
+   CABEÇALHO E NAVEGAÇÃO
+   ========================================================================== */
 header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    border-bottom: 1px solid #1e293b;
+    background: linear-gradient(135deg, var(--bg-painel) 0%, var(--bg-elevado) 100%);
+    border-bottom: 1px solid var(--borda-suave);
     padding: 24px 20px;
     text-align: center;
 }
@@ -25,12 +44,12 @@ header {
 header h1 {
     font-size: 1.7rem;
     letter-spacing: 2px;
-    color: #38bdf8;
+    color: var(--azul-destaque);
     margin-bottom: 4px;
 }
 
 header p {
-    color: #94a3b8;
+    color: var(--texto-suave);
     font-size: 0.95rem;
 }
 
@@ -40,7 +59,10 @@ header p {
     padding: 0 20px 50px;
 }
 
-/* Navegação Superior */
+.relatorio-container--largo {
+    max-width: 1320px;
+}
+
 .header-acoes {
     display: flex;
     justify-content: space-between;
@@ -57,23 +79,24 @@ header p {
     border-radius: 6px;
     font-size: 0.9rem;
     font-weight: 600;
+    cursor: pointer;
     transition: all 0.2s ease;
-    background-color: #1e293b;
+    background-color: var(--bg-elevado);
 }
 
 .btn-voltar {
-    color: #cbd5e1;
-    border: 1px solid #334155;
+    color: var(--texto-medio);
+    border: 1px solid var(--borda-input);
 }
 
 .btn-voltar:hover {
-    background-color: #334155;
+    background-color: var(--borda-input);
     color: #ffffff;
 }
 
 .btn-imprimir {
-    background-color: #0f172a;
-    color: #38bdf8;
+    background-color: var(--bg-painel);
+    color: var(--azul-destaque);
     border: 1px solid #0284c7;
 }
 
@@ -84,16 +107,18 @@ header p {
 
 h2 {
     font-size: 1.45rem;
-    color: #f8fafc;
+    color: var(--texto-branco);
     margin-bottom: 18px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #1e293b;
+    border-bottom: 1px solid var(--borda-suave);
 }
 
-/* Blocos (Fieldsets) */
+/* ==========================================================================
+   BLOCOS (FIELDSETS) E GRIDS BASE
+   ========================================================================== */
 fieldset {
-    background-color: #0f172a;
-    border: 1px solid #1e293b;
+    background-color: var(--bg-painel);
+    border: 1px solid var(--borda-suave);
     border-radius: 10px;
     padding: 22px;
     margin-bottom: 24px;
@@ -101,16 +126,15 @@ fieldset {
 }
 
 legend {
-    background-color: #1e293b;
-    color: #38bdf8;
+    background-color: var(--bg-elevado);
+    color: var(--azul-destaque);
     padding: 5px 14px;
     border-radius: 6px;
     font-weight: 700;
     font-size: 0.92rem;
-    border: 1px solid #334155;
+    border: 1px solid var(--borda-input);
 }
 
-/* Resumo das Premissas */
 .form-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -118,36 +142,45 @@ legend {
     font-size: 0.95rem;
 }
 
+.subgrid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
 .margin-top-sm {
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid #1e293b;
-}
-
-.destaque-ritmo {
-    color: #38bdf8;
-    font-weight: 700;
+    border-top: 1px solid var(--borda-suave);
 }
 
 .linha-separadora {
     margin-bottom: 18px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #1e293b;
+    border-bottom: 1px solid var(--borda-suave);
 }
 
-/* =========================================================
-   GRADE 2x2 E CARTÕES DE EQUIPAMENTOS
-   ========================================================= */
-.frota-grid-2x2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    margin-top: 12px;
+.destaque-ritmo {
+    color: var(--azul-destaque);
+    font-weight: 700;
 }
 
+.ocultar {
+    display: none !important;
+}
+
+.feedback-sucesso {
+    color: var(--verde-texto);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   CARTÕES DE EQUIPAMENTOS (CARGA E TRANSPORTE)
+   ========================================================================== */
 .card-equipamento {
-    background-color: #131c31;
-    border: 1px solid #26334d;
+    background-color: var(--bg-card);
+    border: 1px solid var(--borda-card);
     border-radius: 8px;
     padding: 18px;
     display: flex;
@@ -160,13 +193,13 @@ legend {
     justify-content: space-between;
     align-items: center;
     padding-bottom: 8px;
-    border-bottom: 1px solid #1e293b;
+    border-bottom: 1px solid var(--borda-suave);
 }
 
 .card-equipamento-header .titulo-eq {
     font-size: 0.98rem;
     font-weight: 700;
-    color: #38bdf8;
+    color: var(--azul-destaque);
 }
 
 .badge-classe {
@@ -179,16 +212,10 @@ legend {
     font-weight: 600;
 }
 
-.subgrid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
 .campo-grupo label {
     display: block;
     font-size: 0.82rem;
-    color: #94a3b8;
+    color: var(--texto-suave);
     margin-bottom: 5px;
     font-weight: 600;
 }
@@ -196,10 +223,10 @@ legend {
 .campo-grupo input,
 .campo-grupo select {
     width: 100%;
-    background-color: #0b1120;
-    border: 1px solid #334155;
+    background-color: var(--bg-pagina);
+    border: 1px solid var(--borda-input);
     border-radius: 6px;
-    color: #f8fafc;
+    color: var(--texto-branco);
     padding: 9px 10px;
     font-size: 0.9rem;
     outline: none;
@@ -208,16 +235,16 @@ legend {
 
 .campo-grupo input:focus,
 .campo-grupo select:focus {
-    border-color: #38bdf8;
+    border-color: var(--azul-destaque);
 }
 
 .indicador-rapido-eq {
-    background-color: #0b1120;
-    border: 1px solid #1e293b;
+    background-color: var(--bg-pagina);
+    border: 1px solid var(--borda-suave);
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 0.82rem;
-    color: #cbd5e1;
+    color: var(--texto-medio);
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -226,24 +253,23 @@ legend {
 }
 
 .indicador-rapido-eq strong {
-    color: #38bdf8;
+    color: var(--azul-destaque);
 }
 
-/* =========================================================
+/* ==========================================================================
    MEMORIAL TÉCNICO DA SUGESTÃO
-   ========================================================= */
+   ========================================================================== */
 .memorial-sugestao {
     margin-top: 18px;
     padding: 15px 16px;
-    background-color: #131c31;
+    background-color: var(--bg-card);
     border: 1px solid rgba(56, 189, 248, 0.35);
     border-radius: 8px;
-    display: none;
 }
 
 .memorial-titulo {
     font-weight: 700;
-    color: #38bdf8;
+    color: var(--azul-destaque);
     font-size: 0.92rem;
 }
 
@@ -255,27 +281,27 @@ legend {
 }
 
 .memorial-item {
-    background-color: #0b1120;
+    background-color: var(--bg-pagina);
     padding: 9px 12px;
     border-radius: 6px;
-    border-left: 3px solid #38bdf8;
+    border-left: 3px solid var(--azul-destaque);
 }
 
 .memorial-item small {
     display: block;
-    color: #94a3b8;
+    color: var(--texto-suave);
     font-size: 0.76rem;
     margin-bottom: 2px;
 }
 
 .memorial-item strong {
-    color: #f8fafc;
+    color: var(--texto-branco);
     font-size: 0.9rem;
 }
 
-/* =========================================================
+/* ==========================================================================
    AÇÕES E BOTÕES
-   ========================================================= */
+   ========================================================================== */
 .acoes-simulacao {
     margin-top: 20px;
     display: flex;
@@ -286,8 +312,8 @@ legend {
 }
 
 .btn-sugerir {
-    border-color: #38bdf8;
-    color: #38bdf8;
+    border-color: var(--azul-destaque);
+    color: var(--azul-destaque);
     cursor: pointer;
 }
 
@@ -297,7 +323,7 @@ legend {
 }
 
 .btn-proximo {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, var(--verde-destaque) 0%, #059669 100%);
     color: #ffffff;
     border: none;
     padding: 12px 24px;
@@ -314,28 +340,28 @@ legend {
     box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
 }
 
-/* =========================================================
+.btn-comparativo-link {
+    text-decoration: none;
+    padding: 9px 18px;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
    RESULTADOS E INDICADORES DE ENGENHARIA
-   ========================================================= */
+   ========================================================================== */
 .resumo-terreno-box {
     margin-bottom: 16px;
     padding: 12px 14px;
-    background-color: #131c31;
-    border-left: 4px solid #38bdf8;
+    background-color: var(--bg-card);
+    border-left: 4px solid var(--azul-destaque);
     border-radius: 6px;
     font-size: 0.92rem;
-    color: #e2e8f0;
-}
-
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 16px;
+    color: var(--texto-claro);
 }
 
 .card-stat {
-    background-color: #131c31;
-    border: 1px solid #10b981;
+    background-color: var(--bg-card);
+    border: 1px solid var(--verde-destaque);
     border-radius: 8px;
     padding: 18px 14px;
     text-align: center;
@@ -345,20 +371,20 @@ legend {
     font-size: 0.82rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #94a3b8;
+    color: var(--texto-suave);
     margin-bottom: 8px;
 }
 
 .card-stat .value {
     font-size: 2rem;
     font-weight: 800;
-    color: #38bdf8;
+    color: var(--azul-destaque);
     line-height: 1.1;
 }
 
 .card-stat .unit {
     font-size: 0.85rem;
-    color: #cbd5e1;
+    color: var(--texto-medio);
     margin-top: 6px;
 }
 
@@ -371,24 +397,24 @@ legend {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 12px;
     padding: 14px;
-    background-color: #131c31;
+    background-color: var(--bg-card);
     border-radius: 8px;
-    border: 1px solid #26334d;
+    border: 1px solid var(--borda-card);
 }
 
 .label-indicador {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--texto-suave);
     display: block;
     margin-bottom: 3px;
 }
 
 .valor-indicador {
-    color: #f8fafc;
+    color: var(--texto-branco);
     font-size: 0.96rem;
 }
 
-.mf-ok { color: #4ade80; }
+.mf-ok { color: var(--verde-texto); }
 .mf-alerta { color: #facc15; }
 .mf-saturado { color: #fb923c; }
 
@@ -398,14 +424,14 @@ legend {
 
 .diagnostico-box {
     padding: 15px 16px;
-    background-color: #131c31;
+    background-color: var(--bg-card);
     border: 1px solid rgba(56, 189, 248, 0.35);
     border-radius: 8px;
 }
 
 .diagnostico-titulo {
     font-weight: 700;
-    color: #38bdf8;
+    color: var(--azul-destaque);
     margin-bottom: 8px;
 }
 
@@ -413,17 +439,17 @@ legend {
     margin: 0;
     padding-left: 18px;
     line-height: 1.65;
-    color: #e2e8f0;
+    color: var(--texto-claro);
     font-size: 0.92rem;
 }
 
-/* =========================================================
-   COMPARATIVO DE CENÁRIOS SALVOS EM CACHE
-   ========================================================= */
+/* ==========================================================================
+   CENÁRIOS SALVOS EM CACHE E COMPARATIVO EXECUTIVO
+   ========================================================================== */
 .barra-salvar-cenario {
     margin-top: 18px;
     padding-top: 16px;
-    border-top: 1px solid #1e293b;
+    border-top: 1px solid var(--borda-suave);
     display: flex;
     gap: 12px;
     align-items: center;
@@ -433,10 +459,10 @@ legend {
 .barra-salvar-cenario input {
     flex: 1;
     min-width: 240px;
-    background-color: #0b1120;
-    border: 1px solid #334155;
+    background-color: var(--bg-pagina);
+    border: 1px solid var(--borda-input);
     border-radius: 6px;
-    color: #f8fafc;
+    color: var(--texto-branco);
     padding: 10px 12px;
     font-size: 0.92rem;
     outline: none;
@@ -444,7 +470,7 @@ legend {
 }
 
 .barra-salvar-cenario input:focus {
-    border-color: #38bdf8;
+    border-color: var(--azul-destaque);
 }
 
 .header-comparativo {
@@ -456,9 +482,15 @@ legend {
     flex-wrap: wrap;
 }
 
+.grupo-acoes-comparativo {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .info-cache {
     font-size: 0.85rem;
-    color: #94a3b8;
+    color: var(--texto-suave);
 }
 
 .btn-limpar-cache {
@@ -477,47 +509,10 @@ legend {
     background-color: rgba(239, 68, 68, 0.25);
 }
 
-.tabela-scroll {
-    overflow-x: auto;
-}
-
-.tabela-comparativa {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88rem;
-    background-color: #131c31;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.tabela-comparativa th,
-.tabela-comparativa td {
-    padding: 11px 12px;
-    text-align: left;
-    border-bottom: 1px solid #1e293b;
-    vertical-align: top;
-}
-
-.tabela-comparativa th {
-    background-color: #1e293b;
-    color: #38bdf8;
-    font-weight: 700;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-}
-
-.tabela-comparativa tr:hover {
-    background-color: rgba(56, 189, 248, 0.05);
-}
-
-.linha-destaque-cenario {
-    background-color: rgba(16, 185, 129, 0.06);
-}
-
 .badge-recomendado {
     display: inline-block;
     background-color: rgba(16, 185, 129, 0.18);
-    color: #4ade80;
+    color: var(--verde-texto);
     border: 1px solid rgba(16, 185, 129, 0.4);
     font-size: 0.68rem;
     font-weight: 700;
@@ -528,9 +523,9 @@ legend {
 }
 
 .btn-acao-tabela {
-    background-color: #0b1120;
-    color: #cbd5e1;
-    border: 1px solid #334155;
+    background-color: var(--bg-pagina);
+    color: var(--texto-medio);
+    border: 1px solid var(--borda-input);
     border-radius: 4px;
     padding: 4px 8px;
     cursor: pointer;
@@ -539,8 +534,8 @@ legend {
 }
 
 .btn-acao-tabela:hover {
-    border-color: #38bdf8;
-    color: #38bdf8;
+    border-color: var(--azul-destaque);
+    color: var(--azul-destaque);
 }
 
 .btn-excluir:hover {
@@ -548,15 +543,41 @@ legend {
     color: #f87171;
 }
 
-/* =========================================================
-   RESPONSIVIDADE E MODO DE IMPRESSÃO
-   ========================================================= */
-@media (max-width: 900px) {
-    .frota-grid-2x2 {
-        grid-template-columns: 1fr;
-    }
+/* ==========================================================================
+   PÁGINA DE COMPARATIVO EXECUTIVO (OPÇÃO 1 VS OPÇÃO 2)
+   ========================================================================== */
+.cards-premissas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
 }
 
+.card-stat--neutro {
+    border-color: var(--borda-card);
+}
+
+.card-stat--neutro .value {
+    font-size: 1.45rem;
+}
+
+.card-stat--ritmo {
+    border-color: var(--azul-destaque);
+    background: linear-gradient(180deg, var(--bg-card) 0%, #0f2537 100%);
+}
+
+.card-stat--ritmo .value {
+    font-size: 1.75rem;
+    color: var(--verde-texto);
+}
+
+.comparativo-duplo-grid {
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE E MODO DE IMPRESSÃO
+   ========================================================================== */
 @media (max-width: 768px) {
     .form-row,
     .subgrid-2 {
@@ -568,19 +589,23 @@ legend {
     .no-print {
         display: none !important;
     }
+
     body {
         background: #ffffff;
-        color: #0f172a;
+        color: var(--bg-painel);
     }
+
     .relatorio-container {
         max-width: 100%;
         margin: 0;
         padding: 0;
     }
+
     h2 {
-        color: #0f172a;
-        border-bottom: 2px solid #cbd5e1;
+        color: var(--bg-painel);
+        border-bottom: 2px solid var(--texto-medio);
     }
+
     fieldset,
     .card-equipamento,
     .card-stat,
@@ -589,22 +614,19 @@ legend {
     .resumo-terreno-box,
     .memorial-sugestao,
     .memorial-item,
-    .indicador-rapido-eq,
-    .tabela-comparativa {
+    .indicador-rapido-eq {
         background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #cbd5e1 !important;
+        color: var(--bg-painel) !important;
+        border: 1px solid var(--texto-medio) !important;
         box-shadow: none !important;
     }
-    legend,
-    .tabela-comparativa th {
+
+    legend {
         background: #f1f5f9 !important;
         color: #0369a1 !important;
-        border: 1px solid #cbd5e1 !important;
+        border: 1px solid var(--texto-medio) !important;
     }
-    .tabela-comparativa td {
-        border-bottom: 1px solid #cbd5e1 !important;
-    }
+
     .destaque-ritmo,
     .card-stat .value,
     .card-equipamento-header .titulo-eq,
@@ -612,9 +634,11 @@ legend {
     .memorial-titulo {
         color: #0369a1 !important;
     }
+
     .mf-ok { color: #15803d !important; }
     .mf-alerta { color: #b45309 !important; }
     .mf-saturado { color: #c2410c !important; }
+
     .badge-recomendado {
         background: #dcfce7 !important;
         color: #15803d !important;

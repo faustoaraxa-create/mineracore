@@ -1,6 +1,19 @@
 /* ==============================================================================
    ESTILOS GERAIS - MÓDULO DE PLANEJAMENTO OPERACIONAL MINERACORE
    ============================================================================== */
+:root {
+    --bg-pagina: #0b1120;
+    --bg-container: #1e293b;
+    --bg-card: #0f172a;
+    --borda-padrao: #334155;
+    --borda-hover: #475569;
+    --destaque-azul: #38bdf8;
+    --texto-principal: #f8fafc;
+    --texto-secundario: #e2e8f0;
+    --texto-label: #cbd5e1;
+    --texto-suave: #94a3b8;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -9,38 +22,40 @@
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: #0b1120;
-    color: #e2e8f0;
+    background-color: var(--bg-pagina);
+    color: var(--texto-secundario);
     line-height: 1.5;
     padding: 24px;
     min-height: 100vh;
 }
 
+/* Cabeçalho */
 header {
     max-width: 1400px;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 20px;
     padding-bottom: 12px;
-    border-bottom: 1px solid #1e293b;
+    border-bottom: 1px solid var(--bg-container);
 }
 
 header h1 {
-    color: #38bdf8;
+    color: var(--destaque-azul);
     font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: -0.5px;
 }
 
 header p {
-    color: #94a3b8;
+    color: var(--texto-suave);
     font-size: 0.95rem;
 }
 
+/* Container Principal */
 main {
     width: 100%;
 }
 
 .container-form {
-    background-color: #1e293b;
+    background-color: var(--bg-container);
     padding: 28px;
     border-radius: 14px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
@@ -50,134 +65,134 @@ main {
 }
 
 .container-form h2 {
-    color: #f8fafc;
+    color: var(--texto-principal);
     margin-bottom: 20px;
     font-size: 1.35rem;
     font-weight: 600;
-    border-bottom: 2px solid #334155;
+    border-bottom: 2px solid var(--borda-padrao);
     padding-bottom: 10px;
 }
 
-/* Form em Grid de 2 Colunas */
+/* Layout do Formulário (2 Colunas) */
 form {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
-/* Ocupação de Largura Completa (Bloco 0 - Identificação, Bloco 4 - Manutenção, Bloco 5 - Chuvas e Botão) */
+/* Blocos em Largura Total: Identificação (1), Logística (4), Manutenção (5), Chuvas (6) e Botão */
 form fieldset:nth-of-type(1),
+form fieldset:nth-of-type(4),
 form fieldset:nth-of-type(5),
 form fieldset:nth-of-type(6),
 .btn-calcular {
     grid-column: span 2;
 }
 
+/* Fieldsets e Títulos */
 fieldset {
-    border: 1px solid #334155;
+    border: 1px solid var(--borda-padrao);
     border-radius: 10px;
     padding: 20px;
-    background-color: #0f172a;
+    background-color: var(--bg-card);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     min-width: 0;
 }
 
 fieldset:hover {
-    border-color: #475569;
+    border-color: var(--borda-hover);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 legend {
-    color: #38bdf8;
+    color: var(--destaque-azul);
     font-weight: 600;
     font-size: 1rem;
     padding: 0 8px;
-    background-color: #0f172a;
-}
-
-.form-group {
-    margin-bottom: 14px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #cbd5e1;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-.form-group input, 
-.form-group select {
-    width: 100%;
-    padding: 9px 12px;
-    background-color: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    color: #f8fafc;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-}
-
-.form-group input:focus, 
-.form-group select:focus {
-    outline: none;
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-    background-color: #0f172a;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    background-color: var(--bg-card);
 }
 
 .sub-legend {
     color: #f1f5f9;
     font-size: 0.95rem;
     font-weight: 600;
-    margin-top: 16px;
-    margin-bottom: 4px;
+    margin: 16px 0 4px;
 }
 
 .info-text {
-    color: #94a3b8;
+    color: var(--texto-suave);
     font-size: 0.82rem;
     margin-bottom: 14px;
 }
 
-/* Grid de Paradas Operacionais Ajustado */
+/* Campos e Inputs */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label,
+.parada-item label {
+    display: block;
+    color: var(--texto-label);
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.parada-item label {
+    margin-bottom: 4px;
+    font-size: 0.82rem;
+}
+
+.form-group input,
+.form-group select,
+.parada-item input {
+    width: 100%;
+    background-color: var(--bg-container);
+    border: 1px solid var(--borda-padrao);
+    border-radius: 6px;
+    color: var(--texto-principal);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+    padding: 9px 12px;
+    font-size: 0.95rem;
+}
+
+.parada-item input {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.parada-item input:focus,
+.mes-input input:focus {
+    outline: none;
+    border-color: var(--destaque-azul);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    background-color: var(--bg-card);
+}
+
+/* Grid de Paradas Operacionais */
 .paradas-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
 }
 
-.parada-item label {
-    display: block;
-    margin-bottom: 4px;
-    color: #cbd5e1;
-    font-size: 0.82rem;
-}
-
-.parada-item input {
-    width: 100%;
-    padding: 8px 10px;
-    background-color: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    color: #f8fafc;
-    font-size: 0.9rem;
-}
-
-.parada-item input:focus {
-    outline: none;
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-}
-
-/* Grid das Horas de Manutenção e Chuva (6 Colunas x 2 Linhas) */
+/* Grid Mensal (Manutenção e Chuvas) */
 .form-row-meses {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -185,47 +200,43 @@ legend {
 }
 
 .mes-input {
-    background-color: #1e293b;
+    background-color: var(--bg-container);
     padding: 8px;
     border-radius: 6px;
-    border: 1px solid #334155;
+    border: 1px solid var(--borda-padrao);
     text-align: center;
     transition: border-color 0.2s ease;
 }
 
 .mes-input:hover {
-    border-color: #38bdf8;
+    border-color: var(--destaque-azul);
 }
 
 .mes-input label {
     display: block;
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--texto-suave);
     margin-bottom: 4px;
 }
 
 .mes-input input {
     width: 100%;
     padding: 5px;
-    background-color: #0f172a;
-    border: 1px solid #475569;
+    background-color: var(--bg-card);
+    border: 1px solid var(--borda-hover);
     border-radius: 4px;
-    color: #38bdf8;
+    color: var(--destaque-azul);
     font-weight: 600;
     text-align: center;
     font-size: 0.9rem;
 }
 
-.mes-input input:focus {
-    outline: none;
-    border-color: #38bdf8;
-}
-
-/* Botão Principal de Ação */
+/* Botão Principal */
 .btn-calcular {
     display: block;
     width: 100%;
     padding: 14px;
+    margin-top: 10px;
     background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
     color: #ffffff;
     border: none;
@@ -233,9 +244,8 @@ legend {
     font-size: 1.05rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
     box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
-    margin-top: 10px;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .btn-calcular:hover {
@@ -248,7 +258,7 @@ legend {
     transform: translateY(0);
 }
 
-/* Responsividade para Telas Menores */
+/* Responsividade */
 @media (max-width: 1024px) {
     .form-row-meses {
         grid-template-columns: repeat(4, 1fr);
@@ -259,14 +269,15 @@ legend {
     form {
         grid-template-columns: 1fr;
     }
-    
+
     form fieldset:nth-of-type(1),
+    form fieldset:nth-of-type(4),
     form fieldset:nth-of-type(5),
     form fieldset:nth-of-type(6),
     .btn-calcular {
         grid-column: span 1;
     }
-    
+
     .form-row-meses {
         grid-template-columns: repeat(3, 1fr);
     }
