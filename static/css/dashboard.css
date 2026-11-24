@@ -1,5 +1,5 @@
 /* ==========================================================================
-   DASHBOARD CSS - MINERACORE (Layout Completo e Autónomo)
+   DASHBOARD CSS - MINERACORE (Layout Completo e Autônomo)
    ========================================================================== */
 
 /* Estilos Globais da Página do Dashboard */
@@ -19,10 +19,10 @@ body {
     align-items: center;
 }
 
-/* Cabeçalho com botão de voltar e título centralizado */
+/* Cabeçalho com botão de voltar, status e título centralizado */
 header {
     width: 100%;
-    padding: 20px 20px 30px 20px;
+    padding: 20px 20px 28px 20px;
     background-color: #111827;
     border-bottom: 1px solid #1f2937;
 }
@@ -32,7 +32,8 @@ header {
     width: 90%;
     margin: 0 auto 12px auto;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .btn-voltar-inicio {
@@ -55,6 +56,17 @@ header {
     color: #ffffff;
     border-color: #3b82f6;
     transform: translateX(-2px);
+}
+
+.status-sistema {
+    font-size: 0.78rem;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 .topo-titulo {
@@ -80,19 +92,19 @@ header p {
 main {
     max-width: 1200px;
     width: 90%;
-    margin: 40px auto;
+    margin: 35px auto;
     flex: 1;
 }
 
-/* Grelha e Cartões dos Módulos */
+/* Grelha 3x2 perfeita no Desktop e Cartões dos Módulos */
 .grid-modulos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px 0;
+    padding: 15px 0;
 }
 
 .card-modulo {
@@ -100,7 +112,7 @@ main {
     background: #111827;
     border: 1px solid #1f2937;
     border-radius: 12px;
-    padding: 30px 24px;
+    padding: 28px 24px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -111,8 +123,39 @@ main {
 .card-modulo:hover {
     transform: translateY(-5px);
     border-color: #3b82f6;
-    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
-    background: #1f2937;
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.18);
+    background: #161f32;
+}
+
+.card-corpo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+}
+
+/* Caixa moderna para os ícones SVG */
+.icone-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.14);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    transition: all 0.25s ease;
+}
+
+.icone-box svg {
+    width: 23px;
+    height: 23px;
+}
+
+.card-modulo:hover .icone-box {
+    background: rgba(37, 99, 235, 0.25);
+    border-color: #38bdf8;
 }
 
 /* Destaque sutil no Card de Máquinas (Handbook IA) */
@@ -134,30 +177,58 @@ main {
     border-radius: 20px;
 }
 
-.card-modulo .icone {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    display: inline-block;
+/* Destaque em Âmbar/Dourado para o Novo Card de Consumo de Diesel */
+.card-diesel {
+    border: 1px solid rgba(245, 158, 11, 0.38);
+}
+
+.card-diesel:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.15);
+}
+
+.icone-diesel {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #fbbf24;
+}
+
+.card-diesel:hover .icone-diesel {
+    background: rgba(245, 158, 11, 0.24);
+    border-color: #fbbf24;
+}
+
+.badge-diesel {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 20px;
 }
 
 .card-modulo h2 {
     font-size: 1.25rem;
     font-weight: 600;
     color: #f3f4f6;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .card-modulo p {
     font-size: 0.9rem;
     color: #9ca3af;
     line-height: 1.5;
-    margin-bottom: 24px;
-    flex-grow: 1;
 }
 
 .card-modulo a {
     text-decoration: none;
     width: 100%;
+    display: block;
 }
 
 .card-modulo button {
@@ -217,4 +288,22 @@ main {
 .rodape-autor strong {
     color: #38bdf8;
     font-weight: 600;
+}
+
+/* Responsividade para Tablets e Celulares */
+@media (max-width: 960px) {
+    .grid-modulos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .topo-acoes {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .grid-modulos {
+        grid-template-columns: 1fr;
+    }
 }

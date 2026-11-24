@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumo de Diesel Multi-Frota - Mineracore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/consumo_diesel.css') }}">
+</head>
+<body>
+
+<header class="topo-dashboard">
+    <div class="topo-acoes no-print">
+        <a href="/voltar_dashboard" class="btn-voltar-inicio">← Voltar ao Painel</a>
+        <span class="status-sistema">● Módulo OPEX &amp; Frota Completa</span>
+    </div>
+    <div class="topo-titulo">
+        <h1>CONSUMO DE DIESEL DA FROTA</h1>
+        <p>Dimensionamento Consolidado de Carga, Transporte e Equipamentos Auxiliares</p>
+    </div>
+</header>
+
+<main class="container-diesel">
+    
+    <!-- COLUNA ESQUERDA: Adicionar Equipamentos à Frota -->
+    <section class="painel-formulario">
+        <div>
+            <div class="cabecalho-secao">
+                <h2>Adicionar Equipamento à Frente</h2>
+                <p>Cadastre cada modelo da operação para consolidar o consumo total.</p>
+            </div>
+
+            <form method="POST" action="/consumo_diesel">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="acao" value="adicionar">
+                
+                <div class="grupo-campo">
+                    <label for="equipamento">Identificação / Modelo do Equipamento</label>
+                    <input type="text" id="equipamento" name="equipamento" placeholder="Ex: Escavadeira Cat 390F / Caminhão 777F / Trator D10" required>
+                </div>
+
+                <div class="linha-dupla">
+                    <div class="grupo-campo">
+                        <label for="quantidade">Qtd. de Máquinas</label>
+                        <input type="number" id="quantidade" name="quantidade" min="1" step="1" value="1" required>
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label for="potencia_hp">Potência do Motor (HP)</label>
+                        <input type="number" id="potencia_hp" name="potencia_hp" min="1" step="0.1" placeholder="Ex: 1016">
+                    </div>
+                </div>
+
+                <div class="linha-dupla">
+                    <div class="grupo-campo">
+                        <label for="fator_carga">Severidade / Fator de Carga</label>
+                        <select id="fator_carga" name="fator_carga">
+                            <option value="0.35">Leve (35% - Nivelamento / Apoio)</option>
+                            <option value="0.50" selected>Médio (50% - Ciclo Padrão Mina)</option>
+                            <option value="0.65">Severo (65% - Rampa / Escavação)</option>
+                        </select>
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label for="consumo_manual">Consumo Manual (L/h) <small>(Opcional)</small></label>
+                        <input type="number" id="consumo_manual" name="consumo_manual" min="0" step="0.1" placeholder="Sobrepõe cálculo por HP">
+                    </div>
+                </div>
+
+                <div class="linha-dupla">
+                    <div class="grupo-campo">
+                        <label for="horas_operacao">Horas Trabalhadas (h)</label>
+                        <input type="number" id="horas_operacao" name="horas_operacao" min="0.1" step="0.1" value="{{ ultimas_horas }}" required>
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label for="capacidade_tanque">Tanque Nominal (Litros)</label>
+                        <input type="number" id="capacidade_tanque" name="capacidade_tanque" min="1" step="1" value="600">
+                    </div>
+                </div>
+
+                <div class="linha-dupla">
+                    <div class="grupo-campo">
+                        <label for="preco_diesel">Preço do Diesel (R$/L)</label>
+                        <input type="number" id="preco_diesel" name="preco_diesel" min="0.01" step="0.01" value="{{ ultimo_preco }}" required>
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label for="producao_ton">Produtividade da Frente (t/h) <small>(Opcional)</small></label>
+                        <input type="number" id="producao_ton" name="producao_ton" min="0" step="0.1" placeholder="Ex: 950" value="{{ produtividade_th }}">
+                    </div>
+                </div>
+
+                <div class="acoes-formulario no-print">
+                    <button type="submit" class="btn-primario">+ Adicionar à Frota</button>
+                    <a href="/limpar_diesel" class="btn-secundario">Zerar Lista</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="aviso-operacional-tanque">
+            <span class="icone-alerta">⛽</span>
+            <p>
+                <strong>Recomendação de Reabastecimento (Máx. 40% Reserva):</strong> Programe o comboio ao atingir <strong>40% do tanque</strong> de cada máquina, utilizando <strong>60% de volume útil</strong> entre paradas para evitar entrada de ar na linha de injeção ou parada seca na pista.
+            </p>
+        </div>
+    </section>
+
+    <!-- COLUNA DIREITA: Consolidação Global + Tabela de Equipamentos -->
+    <section class="painel-resultados">
+        <div>
+            <div class="cabecalho-secao">
+                <h2>Consolidado da Frota ({{ consolidado.total_maquinas if consolidado else 0 }} equipamento(s))</h2>
+                <p>Soma horária e acumulada de todos os equipamentos ativos na frente.</p>
+            </div>
+
+            <div class="grid-kpis">
+                <div class="card-kpi destaque-ambar">
+                    <span class="kpi-label">Consumo Horário Frota</span>
+                    <strong class="kpi-valor">{{ consolidado.consumo_frota_lh if consolidado else '0,00' }} L/h</strong>
+                    <span class="kpi-sub">{{ consolidado.total_grupos if consolidado else 0 }} grupo(s) cadastrado(s)</span>
+                </div>
+
+                <div class="card-kpi">
+                    <span class="kpi-label">Volume Total no Período</span>
+                    <strong class="kpi-valor">{{ consolidado.litros_totais if consolidado else '0,00' }} L</strong>
+                    <span class="kpi-sub">Demanda acumulada da frente</span>
+                </div>
+
+                <div class="card-kpi destaque-azul">
+                    <span class="kpi-label">Custo Total de Diesel</span>
+                    <strong class="kpi-valor">R$ {{ consolidado.custo_total if consolidado else '0,00' }}</strong>
+                    <span class="kpi-sub">R$ {{ consolidado.custo_hora if consolidado else '0,00' }} / hora da frota</span>
+                </div>
+
+                <div class="card-kpi">
+                    <span class="kpi-label">Paradas de Comboio (60%)</span>
+                    <strong class="kpi-valor">{{ consolidado.total_paradas_comboio if consolidado else 0 }} parada(s)</strong>
+                    <span class="kpi-sub">Reabastecimentos totais no período</span>
+                </div>
+            </div>
+
+            <!-- Indicador Específico Global da Frente (L/t e R$/t) -->
+            <div class="bloco-especifico">
+                <div class="topo-especifico">
+                    <h3>Eficiência Específica Global da Frente</h3>
+                    {% if consolidado and consolidado.produtividade_th %}
+                        <span class="badge-prod">Base: {{ consolidado.produtividade_th }} t/h</span>
+                    {% endif %}
+                </div>
+                <div class="linha-especifica">
+                    <div>
+                        <span>Consumo Específico Global:</span>
+                        <strong>{{ consolidado.litros_por_ton if consolidado and consolidado.litros_por_ton else '—' }} L/t</strong>
+                    </div>
+                    <div>
+                        <span>Custo Combustível / Ton:</span>
+                        <strong>{{ 'R$ ' + consolidado.custo_por_ton if consolidado and consolidado.custo_por_ton else '—' }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELA DE EQUIPAMENTOS DA FROTA -->
+            <div class="bloco-tabela-frota">
+                <h3>Detalhamento por Equipamento</h3>
+                {% if lista_frota %}
+                <div class="tabela-responsiva">
+                    <table class="tabela-frota">
+                        <thead>
+                            <tr>
+                                <th>Equipamento</th>
+                                <th>Qtd</th>
+                                <th>Regime</th>
+                                <th>L/h Grupo</th>
+                                <th>Total (L)</th>
+                                <th>Auton. (60%)</th>
+                                <th class="no-print"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in lista_frota %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.equipamento }}</strong>
+                                    <small>{{ item.horas_operacao }}h • ~{{ item.volume_abastecimento }}L/parada</small>
+                                </td>
+                                <td>{{ item.quantidade }}</td>
+                                <td>{{ item.regime_texto }}</td>
+                                <td class="destaque-celula">{{ item.consumo_grupo_lh }}</td>
+                                <td>{{ item.litros_totais }}</td>
+                                <td>{{ item.autonomia_horas }}h ({{ item.qtd_abastecimentos }}x)</td>
+                                <td class="no-print">
+                                    <form method="POST" action="/remover_item_diesel/{{ loop.index0 }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn-remover" title="Remover equipamento">✕</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="lista-vazia">
+                    Nenhum equipamento adicionado ainda. Preencha os dados ao lado e clique em <strong>+ Adicionar à Frota</strong>.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="acao-imprimir-rodape no-print">
+            <button type="button" onclick="window.print()" class="btn-imprimir-largo">🖨️ Imprimir / Salvar PDF do Relatório da Frota</button>
+        </div>
+    </section>
+
+    <!-- FAIXA INFERIOR LARGURA TOTAL: Metodologia e Ressalva de Variação -->
+    <section class="card-metodologia">
+        <div class="metodologia-topo">
+            <div>
+                <h3>📐 Metodologia de Cálculo e Premissas Técnicas</h3>
+                <p>Referência base: consumo específico médio de <strong>0,22 L/HP·h</strong> para motores diesel pesados (Caterpillar Performance Handbook / SAE).</p>
+            </div>
+            <span class="tag-metodo">Consolidação Multi-Equipamentos</span>
+        </div>
+
+        <div class="grid-formulas">
+            <div class="item-formula">
+                <span class="titulo-formula">1. Consumo Unitário (L/h)</span>
+                <code>Potência (HP) × Carga × 0,22</code>
+                <small>Ou taxa manual (telemetria) informada</small>
+            </div>
+
+            <div class="item-formula">
+                <span class="titulo-formula">2. Consolidação da Frota</span>
+                <code>∑ (Consumo Grupo × Horas)</code>
+                <small>Soma de carga, transporte e apoio</small>
+            </div>
+
+            <div class="item-formula">
+                <span class="titulo-formula">3. Autonomia Útil &amp; Comboio</span>
+                <code>(Tanque × 0,60) ÷ Consumo Unit.</code>
+                <small>Reabastecimento aos 40% de reserva</small>
+            </div>
+
+            <div class="item-formula">
+                <span class="titulo-formula">4. Eficiência Específica Global</span>
+                <code>Consumo Frota (L/h) ÷ Prod. (t/h)</code>
+                <small>Custo/t: Custo Hora Frota ÷ Produtividade</small>
+            </div>
+        </div>
+
+        <div class="nota-variacao">
+            <strong>⚠️ Nota Técnica — Estimativa Sujeita a Variações Operacionais:</strong>
+            Os resultados apresentados constituem uma <strong>estimativa preliminar de planejamento</strong> e podem apresentar variações reais em campo em função da inclinação das rampas (greide), resistência ao rolamento das pistas, tempo de fila em marcha lenta, altitude, calibragem de pneus, técnica de condução do operador, temperatura ambiente e estado de manutenção do motor/filtros. Para medições exatas, utilize o campo <em>Consumo Manual (L/h)</em> com dados de telemetria (VIMS/Product Link).
+        </div>
+    </section>
+
+</main>
+
+<footer class="rodape-mineracore">
+    <div class="rodape-conteudo">
+        <p class="rodape-marca"><strong>MINERACORE</strong> — Sistema de Engenharia e Planejamento de Lavra</p>
+        <p class="rodape-autor">Desenvolvido por <strong>Fausto Gonçalves dos Santos</strong> • Araxá - MG</p>
+    </div>
+</footer>
+
+</body>
+</html>
