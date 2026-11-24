@@ -1,10 +1,10 @@
 /* ==========================================================================
    MINERACORE - INTERFACE DE INFRAESTRUTURA E APOIO DE MINA
    Responsabilidade exclusiva:
-   - Ler o cenário primário selecionado no comparativo (localStorage)
-   - Capturar inputs de Patrol, Trator, Pipa e até 3 Máquinas Extras
-   - Enviar dados com token CSRF para as APIs Python (/api/sugerir_infra, /api/calcular_infra, /api/agente_infra)
-   - Renderizar resultados e diagnósticos na tela (zero matemática no JS)
+- Ler o cenário primário selecionado no comparativo (localStorage)
+- Capturar inputs de Patrol, Trator, Pipa e até 3 Máquinas Extras
+- Enviar dados com token CSRF para as APIs Python (/api/sugerir_infra, /api/calcular_infra, /api/agente_infra)
+- Renderizar resultados, visão consolidada na mesma tela e diagnósticos
    ========================================================================== */
 'use strict';
 
@@ -16,6 +16,7 @@ const NOME_CONTRATO = PLANO.contrato || 'geral';
 const MAX_EXTRAS = 3;
 
 let CENARIO_ATIVO = null;
+let MODO_CONSOLIDADO_ATIVO = false;
 
 // =========================================================================
 // 2. UTILITÁRIOS DE DOM, FORMATAÇÃO E CABEÇALHO CSRF
@@ -264,7 +265,35 @@ async function calcularInfraestrutura() {
 }
 
 // =========================================================================
-// 6. RENDERIZAÇÃO DOS CARDS, CONSOLIDADO E DIAGNÓSTICO NA TELA
+// 6. ALTERNÂNCIA DE VISÃO CONSOLIDADA NA PRÓPRIA PÁGINA
+// =========================================================================
+function alternarModoConsolidado(forcarEstado = null) {
+    const secaoConfig = el('secao-config-infra');
+    const btnTopo = el('btn-consolidar-tela');
+    const btnRodape = el('btn-consolidar-tela-rodape');
+
+    MODO_CONSOLIDADO_ATIVO = typeof forcarEstado === 'boolean' ? forcarEstado : !MODO_CONSOLIDADO_ATIVO;
+
+    alternarVisibilidade(secaoConfig, !MODO_CONSOLIDADO_ATIVO);
+
+    if (btnTopo) {
+        btnTopo.textContent = MODO_CONSOLIDADO_ATIVO
+            ? '✏️ Voltar e Editar Parâmetros'
+            : '📋 Consolidar Tudo na Tela';
+    }
+    if (btnRodape) {
+        btnRodape.textContent = MODO_CONSOLIDADO_ATIVO
+            ? '✏️ Voltar e Editar Parâmetros'
+            : '📋 Consolidar Planejamento Geral nesta Página';
+    }
+
+    if (MODO_CONSOLIDADO_ATIVO) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// =========================================================================
+// 7. RENDERIZAÇÃO DOS CARDS, CONSOLIDADO E DIAGNÓSTICO NA TELA
 // =========================================================================
 function renderizarResultadoInfra(res) {
     const extraCards = (res.extras_validas || []).map((item) => `
@@ -296,6 +325,16 @@ function renderizarResultadoInfra(res) {
         `;
     }
 
+    const escavResumo = CENARIO_ATIVO?.inputs
+        ? `${CENARIO_ATIVO.qtdEscavadeiras}x ${CENARIO_ATIVO.inputs.modEscav}`
+        : '--';
+    const camResumo = CENARIO_ATIVO?.inputs
+        ? `${CENARIO_ATIVO.qtdCaminhoes}x ${CENARIO_ATIVO.inputs.modCam} (${CENARIO_ATIVO.inputs.cargaCaminhao} t)`
+        : '--';
+    const extrasResumo = (res.extras_validas || []).length > 0
+        ? res.extras_validas.map((e) => `${e.qtd}x ${e.nome}`).join(' | ')
+        : 'Nenhuma máquina extra';
+
     if (el('painel-consolidado-mina')) {
         el('painel-consolidado-mina').innerHTML = `
             <div class="consolidado-titulo">Consolidação Geral da Operação (Carga + Transporte + Infraestrutura)</div>
@@ -313,6 +352,25 @@ function renderizarResultadoInfra(res) {
                     <strong class="destaque-verde">${res.total_equipamentos_mina} equipamentos</strong>
                 </div>
             </div>
+
+            <div class="consolidado-grid" style="margin-top: 12px;">
+                <div class="item-herdado">
+                    <small>Carga (Escavadeiras)</small>
+                    <strong>${escavResumo}</strong>
+                </div>
+                <div class="item-herdado">
+                    <small>Transporte (Caminhões)</small>
+                    <strong>${camResumo}</strong>
+                </div>
+                <div class="item-herdado">
+                    <small>Infraestrutura Principal</small>
+                    <strong>${res.qtd_patrol}x Patrol | ${res.qtd_trator}x Trator | ${res.qtd_pipa}x Pipa</strong>
+                </div>
+                <div class="item-herdado">
+                    <small>Equipamentos Extras de Apoio</small>
+                    <strong>${extrasResumo}</strong>
+                </div>
+            </div>
         `;
     }
 
@@ -326,10 +384,13 @@ function renderizarResultadoInfra(res) {
     }
 
     alternarVisibilidade(el('bloco-resultado-infra'), true);
+
+    const btnTopo = el('btn-consolidar-tela');
+    if (btnTopo) btnTopo.style.display = 'inline-block';
 }
 
 // =========================================================================
-// 7. INICIALIZAÇÃO E EVENTOS DA PÁGINA
+// 8. INICIALIZAÇÃO E EVENTOS DA PÁGINA
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
     alternarVisibilidade(el('bloco-resultado-infra'), false);
@@ -340,6 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
     el('btn-add-extra-infra')?.addEventListener('click', adicionarCaixaExtraInfra);
     el('btn-sugerir-infra')?.addEventListener('click', sugerirInfraestrutura);
     el('btn-calcular-infra')?.addEventListener('click', calcularInfraestrutura);
+    el('btn-consolidar-tela')?.addEventListener('click', () => alternarModoConsolidado());
+    el('btn-consolidar-tela-rodape')?.addEventListener('click', () => alternarModoConsolidado());
     el('btn-fechar-infra')?.addEventListener('click', () => window.close());
     el('btn-imprimir-infra')?.addEventListener('click', () => window.print());
 });

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request
 from utils import parse_float, parse_int
+from config import MAX_HORAS_MES
 
 planejamento_mensal_app = Blueprint('planejamento_mensal_app', __name__)
 
@@ -56,15 +57,16 @@ def calcular_planejamento_anual(form):
     tempo_volta_horas = (dist_volta / vel_vazio) if vel_vazio > 0 else 0.0
     tempo_ciclo_transporte_min = ((tempo_ida_horas + tempo_volta_horas) * 60.0) + tempo_fixo_min
 
-    # Apuração mensal de horas úteis, chuva e manutenção
+    # Apuração mensal de horas úteis, chuva e manutenção (limitadas a MAX_HORAS_MES)
     dados_mensais = []
     total_horas_uteis_ano = 0.0
     total_horas_chuva_ano = 0.0
     total_horas_manutencao_ano = 0.0
 
     for nome_mes, dias_no_mes, sigla in MESES_CONFIG:
-        horas_chuva = parse_float(form.get(f'chuva_{sigla}'), 0.0)
-        horas_maint = parse_float(form.get(f'maint_{sigla}'), 0.0)
+        horas_chuva = min(MAX_HORAS_MES, parse_float(form.get(f'chuva_{sigla}'), padrao=0.0, minimo=0.0))
+        horas_maint = min(MAX_HORAS_MES, parse_float(form.get(f'maint_{sigla}'), padrao=0.0, minimo=0.0))
+
         horas_brutas_mes = dias_no_mes * horas_efetivas_dia_total
         horas_uteis_mes = max(0.0, horas_brutas_mes - (horas_chuva + horas_maint))
 
@@ -134,4 +136,4 @@ def planejamento_mensal():
             print(f"Erro no cálculo do planejamento: {e}")
             return "Ocorreu um erro ao processar os cálculos operacionais. Verifique os valores informados.", 400
 
-    return render_template('planejamento_mensal.html')
+    return render_template('planejamento_mensal.html', max_horas=MAX_HORAS_MES)

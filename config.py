@@ -1,0 +1,5 @@
+# config.py
+
+MAX_HORAS_MES = 730
+MAX_HORAS_DIA = 24
+FATOR_TANQUE_UTIL = 0.60

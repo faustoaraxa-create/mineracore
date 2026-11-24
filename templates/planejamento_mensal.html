@@ -19,7 +19,7 @@
         <h2>Parâmetros Completos do Plano Operacional</h2>
 
         <!-- Envia os parâmetros diretamente para o backend Python processar os cálculos -->
-        <form action="/planejamento_mensal" method="POST" autocomplete="off" id="form-plano">
+        <form action="/planejamento_mensal" method="POST" autocomplete="off" id="form-plano" data-max-horas="{{ max_horas }}">
             <!-- Token CSRF obrigatório para validação segura no Flask -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -46,7 +46,7 @@
                     <select id="tipo_material" name="tipo_material" required>
                         <option value="" disabled selected>Selecione o material...</option>
                         <option value="itabirito">Itabirito Compacto / Minério de Ferro</option>
-                        <option value="estoril">Estéril / Rocha Sã</option>
+                        <option value="esteril">Estéril / Rocha Sã</option>
                         <option value="fosfato">Minério de Fosfato</option>
                         <option value="argila">Argila / Solo de Cobertura</option>
                         <option value="outro">Outro / Personalizado</option>
@@ -61,7 +61,7 @@
 
                 <div class="form-group">
                     <label for="densidade_material">Densidade do Material (t/m³):</label>
-                    <input type="number" id="densidade_material" name="densidade_material" step="0.01" min="0.01" placeholder="Ex: 2.70" value="" required>
+                    <input type="number" id="densidade_material" name="densidade_material" step="0.01" min="0.01" placeholder="Ex: 2.0" value="" required>
                 </div>
 
                 <div class="form-row">
@@ -158,7 +158,7 @@
                     </div>
                     <div class="form-group">
                         <label for="vel_vazio">Velocidade Média - Vazio (km/h):</label>
-                        <input type="number" id="vel_vazio" name="vel_vazio" step="0.1" min="1" placeholder="Ex: 35.0" value="" required>
+                        <input type="number" id="vel_vazio" name="vel_vazio" step="0.1" min="1" placeholder="Ex: 30.0" value="" required>
                     </div>
                 </div>
 
@@ -173,21 +173,21 @@
                  ========================================================= -->
             <fieldset>
                 <legend>4. Paradas para Manutenção Mecânica dos Equipamentos (Horas/Mês)</legend>
-                <p class="info-text">Informe a estimativa de horas de paralisação da praça de lavra para manutenções agendadas ou corretivas:</p>
+                <p class="info-text">Informe a estimativa de horas de paralisação da praça de lavra para manutenções agendadas ou corretivas (máx. {{ max_horas|int }}h/mês):</p>
 
                 <div class="form-row-meses">
-                    <div class="mes-input"><label>Janeiro</label><input type="number" name="maint_jan" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Fevereiro</label><input type="number" name="maint_fev" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Março</label><input type="number" name="maint_mar" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Abril</label><input type="number" name="maint_abr" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Maio</label><input type="number" name="maint_mai" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Junho</label><input type="number" name="maint_jun" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Julho</label><input type="number" name="maint_jul" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Agosto</label><input type="number" name="maint_ago" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Setembro</label><input type="number" name="maint_set" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Outubro</label><input type="number" name="maint_out" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Novembro</label><input type="number" name="maint_nov" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Dezembro</label><input type="number" name="maint_dez" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label for="maint_jan">Janeiro</label><input type="number" id="maint_jan" name="maint_jan" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_fev">Fevereiro</label><input type="number" id="maint_fev" name="maint_fev" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_mar">Março</label><input type="number" id="maint_mar" name="maint_mar" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_abr">Abril</label><input type="number" id="maint_abr" name="maint_abr" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_mai">Maio</label><input type="number" id="maint_mai" name="maint_mai" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_jun">Junho</label><input type="number" id="maint_jun" name="maint_jun" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_jul">Julho</label><input type="number" id="maint_jul" name="maint_jul" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_ago">Agosto</label><input type="number" id="maint_ago" name="maint_ago" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_set">Setembro</label><input type="number" id="maint_set" name="maint_set" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_out">Outubro</label><input type="number" id="maint_out" name="maint_out" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_nov">Novembro</label><input type="number" id="maint_nov" name="maint_nov" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="maint_dez">Dezembro</label><input type="number" id="maint_dez" name="maint_dez" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
                 </div>
             </fieldset>
 
@@ -196,21 +196,21 @@
                  ========================================================= -->
             <fieldset>
                 <legend>5. Fatores Climáticos (Horas de Paralisação por Chuva por Mês)</legend>
-                <p class="info-text">Informe as horas estimadas de paralisação operacional devidas a precipitações pluviais:</p>
+                <p class="info-text">Informe as horas estimadas de paralisação operacional devidas a precipitações pluviais (máx. {{ max_horas|int }}h/mês):</p>
 
                 <div class="form-row-meses">
-                    <div class="mes-input"><label>Janeiro</label><input type="number" id="chuva_jan" name="chuva_jan" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Fevereiro</label><input type="number" id="chuva_fev" name="chuva_fev" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Março</label><input type="number" id="chuva_mar" name="chuva_mar" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Abril</label><input type="number" id="chuva_abr" name="chuva_abr" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Maio</label><input type="number" id="chuva_mai" name="chuva_mai" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Junho</label><input type="number" id="chuva_jun" name="chuva_jun" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Julho</label><input type="number" id="chuva_jul" name="chuva_jul" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Agosto</label><input type="number" id="chuva_ago" name="chuva_ago" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Setembro</label><input type="number" id="chuva_set" name="chuva_set" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Outubro</label><input type="number" id="chuva_out" name="chuva_out" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Novembro</label><input type="number" id="chuva_nov" name="chuva_nov" value="" placeholder="0" step="0.5" min="0"></div>
-                    <div class="mes-input"><label>Dezembro</label><input type="number" id="chuva_dez" name="chuva_dez" value="" placeholder="0" step="0.5" min="0"></div>
+                    <div class="mes-input"><label for="chuva_jan">Janeiro</label><input type="number" id="chuva_jan" name="chuva_jan" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_fev">Fevereiro</label><input type="number" id="chuva_fev" name="chuva_fev" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_mar">Março</label><input type="number" id="chuva_mar" name="chuva_mar" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_abr">Abril</label><input type="number" id="chuva_abr" name="chuva_abr" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_mai">Maio</label><input type="number" id="chuva_mai" name="chuva_mai" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_jun">Junho</label><input type="number" id="chuva_jun" name="chuva_jun" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_jul">Julho</label><input type="number" id="chuva_jul" name="chuva_jul" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_ago">Agosto</label><input type="number" id="chuva_ago" name="chuva_ago" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_set">Setembro</label><input type="number" id="chuva_set" name="chuva_set" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_out">Outubro</label><input type="number" id="chuva_out" name="chuva_out" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_nov">Novembro</label><input type="number" id="chuva_nov" name="chuva_nov" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
+                    <div class="mes-input"><label for="chuva_dez">Dezembro</label><input type="number" id="chuva_dez" name="chuva_dez" value="" placeholder="0" step="0.5" min="0" max="{{ max_horas }}"></div>
                 </div>
             </fieldset>
 
@@ -220,8 +220,29 @@
     </div>
 </main>
 
-<!-- Script leve apenas para alternar campo visual de material personalizado -->
+<!-- Script leve para alternar campo visual de material personalizado -->
 <script src="{{ url_for('static', filename='planejamento_mensal.js') }}"></script>
+
+<!-- Trava instantânea na digitação para os campos mensais (Manutenção e Chuva) -->
+<script>
+    (function () {
+        const formulario = document.getElementById('form-plano');
+        const limiteHorasMes = parseFloat(formulario?.dataset.maxHoras) || 730;
+
+        document.querySelectorAll('.form-row-meses input[type="number"]').forEach(campo => {
+            campo.addEventListener('input', function () {
+                const valor = parseFloat(this.value);
+                if (!isNaN(valor)) {
+                    if (valor > limiteHorasMes) {
+                        this.value = limiteHorasMes;
+                    } else if (valor < 0) {
+                        this.value = 0;
+                    }
+                }
+            });
+        });
+    })();
+</script>
 
 </body>
 </html>

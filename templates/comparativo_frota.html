@@ -6,10 +6,13 @@
     <!-- Token CSRF obrigatório para o fetch POST /api/comparar_cenarios -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Comparativo Técnico de Carga e Transporte - Mineracore</title>
+    <!-- CSS base do módulo e CSS exclusivo do comparativo de frota -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dimensionamento_frota.css') }}?v=3">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/comparativo_frota.css') }}?v=1">
 </head>
 <body>
 
+<!-- CABEÇALHO INSTITUCIONAL (OCULTO NA IMPRESSÃO) -->
 <header class="no-print">
     <h1>MINERACORE</h1>
     <p>Relatório Executivo de Comparação Técnica de Frotas (Opção 1 vs. Opção 2)</p>
@@ -18,12 +21,16 @@
 <main>
     <div class="relatorio-container relatorio-container--largo">
 
-        <!-- AÇÕES DO CABEÇALHO -->
+        <!-- AÇÕES DO CABEÇALHO (VOLTAR, METODOLOGIA E IMPRIMIR) -->
         <nav class="header-acoes no-print">
             <button type="button" id="btn-fechar-aba" class="btn-voltar">← Fechar Aba e Voltar</button>
-            <button type="button" id="btn-imprimir-comparativo" class="btn-imprimir">🖨️ Imprimir / Salvar PDF</button>
+            <div class="header-acoes-direita">
+                <button type="button" id="btn-abrir-metodologia" class="btn-metodologia">📘 Metodologia de Cálculo</button>
+                <button type="button" id="btn-imprimir-comparativo" class="btn-imprimir">🖨️ Imprimir / Salvar PDF</button>
+            </div>
         </nav>
 
+        <!-- TÍTULO DO ESTUDO COM O NOME DO CONTRATO -->
         <h2>Estudo Comparativo de Carga e Transporte: {{ plano.contrato }}</h2>
 
         <!-- PREMISSAS DE PRODUÇÃO E LOGÍSTICA DO CONTRATO -->
@@ -63,7 +70,7 @@
         </fieldset>
 
         <!-- PARECER TÉCNICO INDICANDO A OPÇÃO MAIS VANTAJOSA -->
-        <div id="parecer-tecnico-comparativo" class="ocultar" style="margin-bottom:18px;"></div>
+        <div id="parecer-tecnico-comparativo" class="ocultar parecer-espacamento"></div>
 
         <!-- CONFRONTO LADO A LADO DAS 2 OPÇÕES + BOTÃO DE INFRAESTRUTURA EM CADA CARD -->
         <div id="container-comparativo-duplo"
@@ -74,8 +81,43 @@
     </div>
 </main>
 
+<!-- MODAL EXPLICATIVO: METODOLOGIA DE CÁLCULO DE ENGENHARIA -->
+<div id="modal-metodologia" class="modal-overlay no-print" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-metodologia">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="titulo-modal-metodologia">📘 Metodologia de Dimensionamento & Seleção Técnica</h3>
+            <button type="button" id="btn-fechar-metodologia" class="btn-fechar-modal" title="Fechar">&times;</button>
+        </div>
+
+        <div class="metodologia-item">
+            <h4>1. Ritmo Alvo de Produção (t/h)</h4>
+            <p>Calculado dividindo a meta anual (convertida para toneladas, quando informada em m³ in situ) pelo total de horas úteis líquidas do calendário operacional (descontadas paradas de turno, chuva e manutenção).</p>
+            <span class="formula-tag">Ritmo Alvo (t/h) = Massa Total Anual (t) ÷ Horas Úteis Anuais (h)</span>
+        </div>
+
+        <div class="metodologia-item">
+            <h4>2. Acoplamento Caçamba × Báscula (Número de Passes)</h4>
+            <p>Relaciona a capacidade útil do caminhão com o volume da caçamba da escavadeira ajustado pelo fator de enchimento e densidade solta do material. Operações eficientes buscam entre <strong>3 a 8 passes</strong> por ciclo.</p>
+            <span class="formula-tag">Passes = Capacidade Útil Caminhão ÷ (Volume Caçamba × Fator Enchimento × Densidade Solta)</span>
+        </div>
+
+        <div class="metodologia-item">
+            <h4>3. Match Factor (Fator de Compatibilidade de Frota)</h4>
+            <p>Mede o equilíbrio sincronizado entre transporte e carga. Valores próximos de <strong>0.85 a 1.00</strong> indicam alta utilização da escavadeira sem formação excessiva de filas de caminhões na praça de lavra.</p>
+            <span class="formula-tag">MF = (Nº Caminhões × Tempo Ciclo Carga) ÷ (Nº Escavadeiras × Tempo Ciclo Transporte)</span>
+        </div>
+
+        <div class="metodologia-item metodologia-item--destaque">
+            <h4>4. Critério de Recomendação do Melhor Cenário</h4>
+            <p>O sistema avalia conjuntamente: <strong>(a)</strong> atendimento integral ao ritmo alvo exigido, <strong>(b)</strong> menor frota total mobilizada, <strong>(c)</strong> Match Factor mais próximo da faixa ótima (0.85–1.00) e <strong>(d)</strong> número de passes equilibrado.</p>
+        </div>
+    </div>
+</div>
+
+<!-- DADOS DO PLANO E SCRIPTS EXTERNOS -->
 <script id="plano-data" type="application/json">{{ plano | tojson | safe }}</script>
 <script src="{{ url_for('static', filename='js/dimensionamento_frota.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='js/comparativo_frota.js') }}?v=1"></script>
 
 </body>
 </html>

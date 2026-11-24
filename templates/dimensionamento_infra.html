@@ -20,19 +20,25 @@
 <main>
     <div class="infra-container">
 
-        <!-- Barra superior de navegação e exportação/impressão -->
+        <!-- Barra superior de navegação, consolidação na tela e exportação/impressão -->
         <nav class="header-acoes no-print">
             <button type="button" id="btn-fechar-infra" class="btn-voltar">← Fechar Aba e Voltar</button>
-            <button type="button" id="btn-imprimir-infra" class="btn-imprimir">🖨️ Imprimir / Salvar PDF</button>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <button type="button" id="btn-consolidar-tela" class="btn-sugerir-infra" style="display: none;">
+                    📋 Consolidar Tudo na Tela
+                </button>
+                <button type="button" id="btn-imprimir-infra" class="btn-imprimir">🖨️ Imprimir / Salvar PDF</button>
+            </div>
         </nav>
 
         <!-- Título dinâmico com o nome do contrato ativo no plano -->
         <h2>Dimensionamento de Infraestrutura & Apoio: {{ plano.contrato }}</h2>
 
         <!-- ===================================================================
-             1. PREMISSAS DO CONTRATO + FROTA PRIMÁRIA SELECIONADA NO COMPARATIVO
+1. PREMISSAS DO CONTRATO + FROTA PRIMÁRIA SELECIONADA NO COMPARATIVO
              =================================================================== -->
-        <fieldset>
+        <fieldset id="secao-contexto-infra">
             <legend>1. Contexto Operacional & Frota Primária Selecionada</legend>
 
             <div class="grid-premissas">
@@ -69,9 +75,9 @@
         </fieldset>
 
         <!-- ===================================================================
-             2. PARÂMETROS DOS EQUIPAMENTOS DE INFRAESTRUTURA E APOIO
+2. PARÂMETROS DOS EQUIPAMENTOS DE INFRAESTRUTURA E APOIO
              =================================================================== -->
-        <fieldset>
+        <fieldset id="secao-config-infra">
             <legend>2. Configuração da Frota de Infraestrutura & Apoio</legend>
 
             <div class="grid-infra-3">
@@ -187,7 +193,7 @@
         </fieldset>
 
         <!-- ===================================================================
-             3. RESULTADO DA INFRAESTRUTURA + CONSOLIDADO GERAL DA MINA
+3. RESULTADO DA INFRAESTRUTURA + CONSOLIDADO GERAL DA MINA
              =================================================================== -->
         <fieldset id="bloco-resultado-infra" class="ocultar">
             <legend>3. Resultado de Infraestrutura & Consolidação Geral da Mina</legend>
@@ -195,6 +201,13 @@
             <div id="cards-resultado-infra" class="grid-resultados-infra"></div>
             <div id="painel-consolidado-mina" class="painel-consolidado-mina"></div>
             <div id="diagnostico-infra"></div>
+
+            <!-- Ação rápida para consolidar tudo na mesma página (ocultar edição) -->
+            <div class="acoes-infra no-print" style="margin-top: 16px;">
+                <button type="button" id="btn-consolidar-tela-rodape" class="btn-calcular-infra">
+                    📋 Consolidar Planejamento Geral nesta Página
+                </button>
+            </div>
         </fieldset>
 
     </div>
@@ -204,7 +217,7 @@
 <script id="plano-data" type="application/json">{{ plano | tojson | safe }}</script>
 
 <!-- Controlador de interface (toda a matemática é executada nas rotas /api/* do Python) -->
-<script src="{{ url_for('static', filename='js/dimensionamento_infra.js') }}?v=6"></script>
+<script src="{{ url_for('static', filename='js/dimensionamento_infra.js') }}?v=7"></script>
 
 </body>
 </html>
