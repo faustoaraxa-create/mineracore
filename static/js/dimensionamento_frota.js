@@ -1,9 +1,9 @@
 /* ==========================================================================
    MINERACORE - INTERFACE DE DIMENSIONAMENTO DE CARGA E TRANSPORTE
    Responsabilidade exclusiva:
-   - Capturar interações da interface (cliques, inputs, selects)
-   - Enviar requisições JSON com token CSRF para as rotas Python (/api/*)
-   - Renderizar resultados e gerenciar cache local de até 2 cenários
+- Capturar interações da interface (cliques, inputs, selects)
+- Enviar requisições JSON com token CSRF para as rotas Python (/api/*)
+- Renderizar resultados e gerenciar cache local de até 2 cenários
    ========================================================================== */
 'use strict';
 
@@ -414,7 +414,7 @@ async function renderizarPaginaComparativaDupla() {
             </div>
 
             <div class="subgrid-2">
-                <div class="memorial-item"><small>Frota Carga & Transp.</small><strong>${card.totalMaquinas} máquinas (${card.qtdEscavadeiras}E + ${card.qtdCaminhoes}C)</strong></div>
+                <div class="memorial-item"><small>Frota Carga & Transp.</small><strong>${card.totalMaquinas} máquinas (${card.qtdEscavadeiras}E + ${card.qtdCaminhoes}C • ${card.relacaoCamEscav || ''})</strong></div>
                 <div class="memorial-item"><small>Match Factor</small><strong>MF ${card.matchFactor} (${card.passadas} passes)</strong></div>
             </div>
 

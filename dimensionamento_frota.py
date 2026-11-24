@@ -417,6 +417,7 @@ def _comparar_cenarios_producao(cenarios, plano):
         qtd_e = int(parse_float(c.get('qtdEscavadeiras'), 0))
         qtd_c = int(parse_float(c.get('qtdCaminhoes'), 0))
         total_maq = qtd_e + qtd_c
+        cam_por_escav = qtd_c / max(1, qtd_e)
 
         km_hora = parse_float(c.get('kmTotalHora'), 0.0)
         km_ano = parse_float(c.get('kmTotalAno'), km_hora * horas_uteis_ano)
@@ -443,6 +444,7 @@ def _comparar_cenarios_producao(cenarios, plano):
             'totalMaquinas': total_maq,
             'qtdEscavadeiras': qtd_e,
             'qtdCaminhoes': qtd_c,
+            'relacaoCamEscav': f"{cam_por_escav:.1f} cam/escav",
             'matchFactor': f"{parse_float(c.get('matchFactor'), 0.0):.2f}",
             'passadas': int(parse_float(c.get('passadas'), 0)),
             'modEscav': inputs_c.get('modEscav') or c.get('escavNominal') or 'Escavadeira',
