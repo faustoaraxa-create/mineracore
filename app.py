@@ -14,6 +14,9 @@ from planejamento_mensal import planejamento_mensal_app
 from dimensionamento_frota import frota_bp
 from rotas_maquinas import maquinas_bp
 from calculadora_diesel import diesel_bp
+from calculadora_britagem import britagem_bp
+
+
 
 load_dotenv()
 
@@ -72,6 +75,7 @@ def create_app() -> Flask:
         frota_bp,
         maquinas_bp,
         diesel_bp,
+        britagem_bp,
     ]
     for bp in blueprints:
         app.register_blueprint(bp)

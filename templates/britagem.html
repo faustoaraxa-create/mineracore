@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alimentação da Britagem Primária - Mineracore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/britagem.css') }}?v=8">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-titulo">
+            <span class="badge-modulo">MÓDULO OPERACIONAL</span>
+            <h1>Alimentação da Britagem Primária</h1>
+        </div>
+        <div class="topbar-acoes">
+            {% if resultado %}
+                <button type="button" class="btn-secundario" onclick="window.print()">Imprimir / PDF</button>
+            {% endif %}
+            <a href="{{ url_for('voltar_dashboard') }}" class="btn-voltar">← Voltar ao Dashboard</a>
+        </div>
+    </header>
+
+    <main class="layout-principal">
+        {% if erro %}
+            <div class="alerta-erro">{{ erro }}</div>
+        {% endif %}
+
+        <div class="grid-duas-colunas">
+            <!-- COLUNA ESQUERDA: Parâmetros de Operação -->
+            <section class="card">
+                <h2 class="card-titulo">Parâmetros de Operação</h2>
+
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <!-- Bloco 1 -->
+                    <div class="secao-form">
+                        <h3>1. Britagem Primária & Turno</h3>
+                        <div class="campos-duplos">
+                            <div class="campo">
+                                <label>Qtd. Britadores / Linhas</label>
+                                <input type="number" name="quantidade_britadores"
+                                       value="{{ dados_formulario.get('quantidade_britadores', '') }}"
+                                       placeholder="Ex: 1" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Cap. Nominal / Britador (t/h)</label>
+                                <input type="number" step="0.1" name="capacidade_nominal_por_britador_tph"
+                                       value="{{ dados_formulario.get('capacidade_nominal_por_britador_tph', '') }}"
+                                       placeholder="Ex: 3200" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Eficiência Britagem (%)</label>
+                                <input type="number" step="0.1" name="eficiencia_britagem"
+                                       value="{{ dados_formulario.get('eficiencia_britagem', '') }}"
+                                       placeholder="Ex: 85" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Horas no Turno (h)</label>
+                                <input type="number" step="0.1" name="horas_turno"
+                                       value="{{ dados_formulario.get('horas_turno', '') }}"
+                                       placeholder="Ex: 9.5" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloco 2 -->
+                    <div class="secao-form">
+                        <h3>2. Silos / Baias de Basculamento</h3>
+                        <div class="campos-duplos">
+                            <div class="campo">
+                                <label>Qtd. Silos / Moegas</label>
+                                <input type="number" name="quantidade_silos"
+                                       value="{{ dados_formulario.get('quantidade_silos', '') }}"
+                                       placeholder="Ex: 2" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Total Baias Simultâneas</label>
+                                <input type="number" name="quantidade_baias_basculamento"
+                                       value="{{ dados_formulario.get('quantidade_baias_basculamento', '') }}"
+                                       placeholder="Ex: 5" required>
+                            </div>
+                        </div>
+
+                        <div class="campo campo-espacado">
+                            <label>Tempo Médio de Manobra e Basculamento (min)</label>
+                            <input type="number" step="0.1" name="tempo_manobra_basculamento_minutos"
+                                   value="{{ dados_formulario.get('tempo_manobra_basculamento_minutos', '') }}"
+                                   placeholder="Ex: 1.5" required>
+                        </div>
+                    </div>
+
+                    <!-- Bloco 3 -->
+                    <div class="secao-form">
+                        <h3>3. Ciclo e Eficiência da Frota</h3>
+                        <div class="campos-duplos">
+                            <div class="campo">
+                                <label>DMT - Distância Média (km)</label>
+                                <input type="number" step="0.1" name="distancia_media_transporte_km"
+                                       value="{{ dados_formulario.get('distancia_media_transporte_km', '') }}"
+                                       placeholder="Ex: 5.8" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Carregamento + Fila Lavra (min)</label>
+                                <input type="number" step="0.1" name="tempo_carregamento_fila_minutos"
+                                       value="{{ dados_formulario.get('tempo_carregamento_fila_minutos', '') }}"
+                                       placeholder="Ex: 2.5" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Vel. Média Carregado (km/h)</label>
+                                <input type="number" step="0.1" name="velocidade_carregado_kmh"
+                                       value="{{ dados_formulario.get('velocidade_carregado_kmh', '') }}"
+                                       placeholder="Ex: 25" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Vel. Média Vazio (km/h)</label>
+                                <input type="number" step="0.1" name="velocidade_vazio_kmh"
+                                       value="{{ dados_formulario.get('velocidade_vazio_kmh', '') }}"
+                                       placeholder="Ex: 32" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Carga Útil / Caminhão (t)</label>
+                                <input type="number" step="0.1" name="carga_util_toneladas"
+                                       value="{{ dados_formulario.get('carga_util_toneladas', '') }}"
+                                       placeholder="Ex: 96" required>
+                            </div>
+
+                            <div class="campo">
+                                <label>Eficiência Operacional Frota (%)</label>
+                                <input type="number" step="0.1" name="eficiencia_frota"
+                                       value="{{ dados_formulario.get('eficiencia_frota', '') }}"
+                                       placeholder="Ex: 85" required>
+                            </div>
+                        </div>
+
+                        <div class="campo campo-espacado">
+                            <label>Caminhões Atuais na Frota</label>
+                            <input type="number" name="quantidade_caminhoes"
+                                   value="{{ dados_formulario.get('quantidade_caminhoes', '') }}"
+                                   placeholder="Ex: 15" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-calcular">Calcular Balanço de Alimentação</button>
+                </form>
+            </section>
+
+            <!-- COLUNA DIREITA: Resultados com Botões de Explicação (?) -->
+            <section class="coluna-direita">
+                {% if resultado %}
+                    <div class="status-banner {% if resultado.taxa_ocupacao_baias > 100 or resultado.taxa_ocupacao_britagem > 105 %}status-alerta{% elif resultado.taxa_ocupacao_britagem >= 85 %}status-ok{% else %}status-ocioso{% endif %}">
+                        <span class="status-label">DIAGNÓSTICO OPERACIONAL</span>
+                        <strong>{{ resultado.status }}</strong>
+                    </div>
+
+                    <!-- Card de Destaque da Frota -->
+                    <div class="card-destaque-frota">
+                        <div class="destaque-topo">
+                            <span class="badge-recomendacao">FROTA RECOMENDADA PARA A META</span>
+                            <span class="destaque-acao">{{ resultado.acao_frota }}</span>
+                        </div>
+                        <div class="destaque-numeros">
+                            <div>
+                                <span class="destaque-valor">{{ resultado.frota_recomendada_inteira }} <small>caminhões</small></span>
+                                <span class="destaque-sub">Cálculo exato: <span class="numero-formatado" data-decimais="1">{{ resultado.frota_ideal_exata }}</span> caminhões</span>
+                            </div>
+                            <div class="destaque-ciclo">
+                                <span><strong>Ciclo Total:</strong> <span class="numero-formatado" data-decimais="1">{{ resultado.tempo_ciclo_total_minutos }}</span> min</span>
+                                <span>Ida: <span class="numero-formatado" data-decimais="1">{{ resultado.tempo_ida_carregado_minutos }}</span> min | Volta: <span class="numero-formatado" data-decimais="1">{{ resultado.tempo_volta_vazio_minutos }}</span> min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid Principal de KPIs com Ícones (?) -->
+                    <div class="kpi-grid">
+                        <!-- KPI 1 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Capacidade Real Britagem</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-cap-real" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-cap-real" class="explicacao-ajuda">
+                                É a meta real de moagem por hora após descontar as paradas operacionais (Capacidade Nominal × Eficiência da Britagem).
+                            </div>
+                            <span class="kpi-valor"><span class="numero-formatado" data-decimais="1">{{ resultado.capacidade_real_britagem_tph }}</span> <small>t/h</small></span>
+                        </div>
+
+                        <!-- KPI 2 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Alimentação Efetiva da Frota</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-alim-frota" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-alim-frota" class="explicacao-ajuda">
+                                Total de minério em toneladas por hora que os caminhões atuais conseguem descarregar nos silos, já descontando a eficiência da frota.
+                            </div>
+                            <span class="kpi-valor"><span class="numero-formatado" data-decimais="1">{{ resultado.alimentacao_frota_tph }}</span> <small>t/h</small></span>
+                        </div>
+
+                        <!-- KPI 3 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Taxa de Ocupação Britagem</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-ocupacao" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-ocupacao" class="explicacao-ajuda">
+                                Percentual da capacidade real do britador que está sendo preenchido pela frota. Entre 85% e 100% indica operação equilibrada.
+                            </div>
+                            <span class="kpi-valor"><span class="numero-formatado" data-decimais="1">{{ resultado.taxa_ocupacao_britagem }}</span> <small>%</small></span>
+                        </div>
+
+                        <!-- KPI 4 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">{{ resultado.tipo_balanco }} Horário na Britagem</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-balanco" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-balanco" class="explicacao-ajuda">
+                                Diferença entre o que a frota entrega e o que o britador suporta. <strong>Déficit</strong> indica falta de caminhões; <strong>Excedente</strong> indica sobra de transporte.
+                            </div>
+                            <span class="kpi-valor {% if resultado.tipo_balanco == 'Déficit' %}texto-alerta{% else %}texto-ok{% endif %}">
+                                <span class="numero-formatado" data-decimais="1">{{ resultado.diferenca_tph }}</span> <small>t/h</small>
+                            </span>
+                        </div>
+
+                        <!-- KPI 5 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Recepção Silos ({{ resultado.quantidade_silos }} silos / {{ resultado.quantidade_baias_basculamento }} baias)</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-silos" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-silos" class="explicacao-ajuda">
+                                Vazão física máxima que as baias dos silos conseguem receber por hora sem formar fila de manobra. Se a ocupação passar de 100%, faltam baias.
+                            </div>
+                            <span class="kpi-valor">
+                                <span class="numero-formatado" data-decimais="1">{{ resultado.capacidade_recepcao_baias_tph }}</span>
+                                <small>t/h (<span class="numero-formatado" data-decimais="1">{{ resultado.taxa_ocupacao_baias }}</span>% ocup.)</small>
+                            </span>
+                        </div>
+
+                        <!-- KPI 6 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Chegada na Praça</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-chegada" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-chegada" class="explicacao-ajuda">
+                                Frequência com que os caminhões chegam na praça da britagem para descarregar e o intervalo médio em minutos entre uma chegada e outra.
+                            </div>
+                            <span class="kpi-valor">
+                                <span class="numero-formatado" data-decimais="1">{{ resultado.chegadas_caminhoes_por_hora }}</span>
+                                <small>cam/h (1 a cada <span class="numero-formatado" data-decimais="2">{{ resultado.intervalo_chegada_minutos }}</span> min)</small>
+                            </span>
+                        </div>
+
+                        <!-- KPI 7 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Ritmo Efetivo por Caminhão</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-ritmo" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-ritmo" class="explicacao-ajuda">
+                                Quantidade média de viagens completas por hora que cada caminhão realiza (já aplicando a eficiência da frota) e sua produção horária individual.
+                            </div>
+                            <span class="kpi-valor">
+                                <span class="numero-formatado" data-decimais="2">{{ resultado.viagens_por_hora_caminhao }}</span>
+                                <small>viagens/h (<span class="numero-formatado" data-decimais="1">{{ resultado.producao_por_caminhao_tph }}</span> t/h)</small>
+                            </span>
+                        </div>
+
+                        <!-- KPI 8 -->
+                        <div class="kpi-card">
+                            <div class="kpi-cabecalho">
+                                <span class="kpi-titulo">Produção no Turno (Frota / Meta)</span>
+                                <button type="button" class="btn-ajuda" data-ajuda="ajuda-turno" title="O que significa?">?</button>
+                            </div>
+                            <div id="ajuda-turno" class="explicacao-ajuda">
+                                Volume total acumulado ao final das horas trabalhadas no turno: quanto a frota atual movimentará comparado à meta total do britador.
+                            </div>
+                            <span class="kpi-valor">
+                                <span class="numero-formatado" data-decimais="1">{{ resultado.producao_frota_turno_toneladas }}</span>
+                                <small>/ <span class="numero-formatado" data-decimais="1">{{ resultado.capacidade_britagem_turno_toneladas }}</span> t</small>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Barra Visual de Ocupação -->
+                    <div class="card">
+                        <div class="barra-info">
+                            <span>Nível de Alimentação vs. Capacidade Real da Britagem</span>
+                            <strong><span class="numero-formatado" data-decimais="1">{{ resultado.taxa_ocupacao_britagem }}</span>%</strong>
+                        </div>
+                        <div class="barra-fundo">
+                            <div class="barra-preenchimento" data-largura="{{ resultado.taxa_ocupacao_britagem }}"></div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card card-vazio">
+                        <h3>Aguardando Simulação</h3>
+                        <p>Informe os dados da britagem, silos/baias de basculamento, DMT, velocidades e eficiência da frota ao lado para calcular o balanço operacional.</p>
+                    </div>
+                {% endif %}
+
+                <div class="card card-metodologia">
+                    <h3>Metodologia de Cálculo</h3>
+                    <ul>
+                        <li><strong>Tempo de Ciclo (min):</strong> ((DMT ÷ Vel. Carregado) × 60) + ((DMT ÷ Vel. Vazio) × 60) + Carregamento/Fila + Manobra/Basculamento</li>
+                        <li><strong>Produtividade Efetiva / Caminhão (t/h):</strong> (60 ÷ Ciclo Total) × (Eficiência Frota ÷ 100) × Carga Útil</li>
+                        <li><strong>Capacidade Real Britagem (t/h):</strong> (Nº Britadores × Cap. Nominal) × (Eficiência Britagem ÷ 100)</li>
+                        <li><strong>Recepção Silos / Baias (t/h):</strong> (60 ÷ Manobra/Basculamento) × Total Baias × Carga Útil</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Arquivo JavaScript modular separado -->
+    <script src="{{ url_for('static', filename='js/britagem.js') }}?v=1"></script>
+</body>
+</html>

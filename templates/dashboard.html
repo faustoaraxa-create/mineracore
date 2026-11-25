@@ -4,63 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Mineracore</title>
-    <!-- Carrega o CSS do dashboard -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=2">
 </head>
 <body>
 
 <header class="topo-dashboard">
     <div class="topo-acoes">
         <a href="/" class="btn-voltar-inicio">← Voltar para Tela Principal</a>
-        <span class="status-sistema">● 6 Módulos Operacionais</span>
+        <span class="status-sistema">● 7 Módulos Operacionais</span>
     </div>
     <div class="topo-titulo">
         <h1>MINERACORE</h1>
         <p>Painel de Controle Operacional</p>
     </div>
+
+    <!-- Barra de Filtros por Área e Busca Rápida -->
+    <div class="barra-controles-dashboard">
+        <div class="filtros-categoria">
+            <button type="button" class="btn-filtro ativo" data-categoria="todos">Todos (7)</button>
+            <button type="button" class="btn-filtro" data-categoria="planejamento">Planejamento</button>
+            <button type="button" class="btn-filtro" data-categoria="lavra">Lavra &amp; Transporte</button>
+            <button type="button" class="btn-filtro" data-categoria="usina">Britagem &amp; Custos</button>
+            <button type="button" class="btn-filtro" data-categoria="apoio">Catálogo IA</button>
+        </div>
+        <div class="caixa-busca-dashboard">
+            <input type="text" id="campoBuscaModulo" placeholder="Buscar módulo (ex: britagem, ciclo, diesel, banco)...">
+        </div>
+    </div>
 </header>
 
 <main>
-    <div class="grid-modulos">
-        
-        <!-- CARD 1: Bloco de Lavra -->
-        <div class="card-modulo">
-            <div class="card-corpo">
-                <div class="icone-box">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
-                </div>
-                <h2>Planejamento do Banco</h2>
-                <p>Cálculo de volume in situ, volume solto e tonelagem do bloco de lavra.</p>
-            </div>
-            <a href="/lavra" class="link-botao"><button>Iniciar Banco</button></a>
-        </div>
+    <div class="grid-modulos" id="gridModulos">
 
-        <!-- CARD 2: Equipamento de Carga -->
-        <div class="card-modulo">
-            <div class="card-corpo">
-                <div class="icone-box">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
-                </div>
-                <h2>Equipamento de Carga</h2>
-                <p>Dimensionamento da concha, passes e produtividade por hora (t/h).</p>
-            </div>
-            <a href="/operacao" class="link-botao"><button>Dimensionar Carga</button></a>
-        </div>
-
-        <!-- CARD 3: Caminhões -->
-        <div class="card-modulo">
-            <div class="card-corpo">
-                <div class="icone-box">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><path d="M14 17h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
-                </div>
-                <h2>Frota de Transporte</h2>
-                <p>Análise de tempo de ciclo, número de caminhões e gargalo operacional.</p>
-            </div>
-            <a href="/dimensionamento_caminhoes" class="link-botao"><button>Dimensionar Frota</button></a>
-        </div>
-
-        <!-- CARD 4: Plano Operacional Anual -->
-        <div class="card-modulo">
+        <!-- CARD 1: Plano Operacional Anual -->
+        <div class="card-modulo" data-categoria="planejamento" data-palavras="plano operacional anual turnos paradas chuva metas">
+            <span class="etapa-modulo">ETAPA 01 • PLANEJAMENTO</span>
             <div class="card-corpo">
                 <div class="icone-box">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
@@ -71,21 +49,62 @@
             <a href="/planejamento_mensal" class="link-botao"><button>Iniciar Planejamento</button></a>
         </div>
 
-        <!-- CARD 5: Máquinas (Handbook Inteligente) -->
-        <div class="card-modulo card-destaque">
-            <span class="badge-novo">HANDBOOK IA</span>
+        <!-- CARD 2: Planejamento do Banco -->
+        <div class="card-modulo" data-categoria="planejamento" data-palavras="planejamento banco lavra volume in situ solto tonelagem empolamento">
+            <span class="etapa-modulo">ETAPA 02 • CUBAGEM</span>
             <div class="card-corpo">
                 <div class="icone-box">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
                 </div>
-                <h2>Máquinas</h2>
-                <p>Consulta automática de especificações técnicas por marca e modelo (peso, potência e caçamba).</p>
+                <h2>Planejamento do Banco</h2>
+                <p>Cálculo de volume in situ, volume solto e tonelagem do bloco de lavra.</p>
             </div>
-            <a href="/maquinas" class="link-botao"><button>Consultar Máquinas</button></a>
+            <a href="/lavra" class="link-botao"><button>Iniciar Banco</button></a>
         </div>
 
-        <!-- CARD 6: Consumo de Diesel (NOVO) -->
-        <div class="card-modulo card-diesel">
+        <!-- CARD 3: Equipamento de Carga -->
+        <div class="card-modulo" data-categoria="lavra" data-palavras="equipamento carga escavadeira pa carregadeira concha passes produtividade">
+            <span class="etapa-modulo">ETAPA 03 • CARGA</span>
+            <div class="card-corpo">
+                <div class="icone-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                </div>
+                <h2>Equipamento de Carga</h2>
+                <p>Dimensionamento da concha, passes e produtividade por hora (t/h).</p>
+            </div>
+            <a href="/operacao" class="link-botao"><button>Dimensionar Carga</button></a>
+        </div>
+
+        <!-- CARD 4: Frota de Transporte -->
+        <div class="card-modulo" data-categoria="lavra" data-palavras="frota transporte caminhoes ciclo dmt gargalo comparativo">
+            <span class="etapa-modulo">ETAPA 04 • TRANSPORTE</span>
+            <div class="card-corpo">
+                <div class="icone-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><path d="M14 17h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                </div>
+                <h2>Frota de Transporte</h2>
+                <p>Análise de tempo de ciclo, número de caminhões e gargalo operacional.</p>
+            </div>
+            <a href="/dimensionamento_caminhoes" class="link-botao"><button>Dimensionar Frota</button></a>
+        </div>
+
+        <!-- CARD 5: Alimentação da Britagem Primária (NOVO MÓDULO) -->
+        <div class="card-modulo card-britagem" data-categoria="usina" data-palavras="britagem primaria silos baias basculamento alimentacao usina">
+            <span class="etapa-modulo">ETAPA 05 • RECEPÇÃO</span>
+            <span class="badge-britagem">NOVO MÓDULO</span>
+            <div class="card-corpo">
+                <div class="icone-box icone-britagem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                </div>
+                <h2>Alimentação da Britagem</h2>
+                <p>Balanço entre frota, silos, baias de basculamento e capacidade real do britador primário.</p>
+            </div>
+            <a href="/britagem" class="link-botao"><button>Simular Britagem</button></a>
+        </div>
+
+        <!-- CARD 6: Consumo de Diesel -->
+        <div class="card-modulo card-diesel" data-categoria="usina" data-palavras="consumo diesel combustivel litros autonomia opex custo">
+            <span class="etapa-modulo">ETAPA 06 • CUSTO &amp; OPEX</span>
             <span class="badge-diesel">CUSTO &amp; OPEX</span>
             <div class="card-corpo">
                 <div class="icone-box icone-diesel">
@@ -97,7 +116,23 @@
             <a href="/consumo_diesel" class="link-botao"><button>Calcular Consumo</button></a>
         </div>
 
+        <!-- CARD 7: Máquinas (Handbook Inteligente) -->
+        <div class="card-modulo card-destaque" data-categoria="apoio" data-palavras="maquinas handbook ia especificacoes tecnicas modelo potencia cacamba">
+            <span class="etapa-modulo">APOIO TÉCNICO</span>
+            <span class="badge-novo">HANDBOOK IA</span>
+            <div class="card-corpo">
+                <div class="icone-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <h2>Máquinas</h2>
+                <p>Consulta automática de especificações técnicas por marca e modelo (peso, potência e caçamba).</p>
+            </div>
+            <a href="/maquinas" class="link-botao"><button>Consultar Máquinas</button></a>
+        </div>
+
     </div>
+
+    <p id="mensagemNenhumModulo" class="mensagem-vazia-dashboard">Nenhum módulo encontrado para o filtro selecionado.</p>
 </main>
 
 <footer class="rodape-mineracore">
@@ -107,5 +142,6 @@
     </div>
 </footer>
 
+<script src="{{ url_for('static', filename='js/dashboard.js') }}?v=1"></script>
 </body>
 </html>
