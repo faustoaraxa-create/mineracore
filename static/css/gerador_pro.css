@@ -1,0 +1,474 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-color: #e9ecef;
+    color: #212529;
+    padding-bottom: 40px;
+}
+
+/* Barra Superior */
+.barra-ferramentas {
+    background-color: #1e293b;
+    color: #ffffff;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.identidade-barra {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.marca-barra {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #ffffff;
+}
+
+.destaque-barra {
+    color: #2dd4bf;
+}
+
+.divisor-barra {
+    width: 1px;
+    height: 28px;
+    background-color: #475569;
+}
+
+.titulo-barra {
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-barra span {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.acoes-barra {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+button,
+a.botao-secundario {
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.botao-primario {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.botao-primario:hover {
+    background-color: #1d4ed8;
+}
+
+.botao-secundario {
+    background-color: #475569;
+    color: #ffffff;
+}
+
+.botao-secundario:hover {
+    background-color: #334155;
+}
+
+.botao-adicionar {
+    background-color: #0f766e;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.botao-adicionar:hover {
+    background-color: #115e59;
+}
+
+.botao-remover {
+    background-color: #dc2626;
+    color: #ffffff;
+    font-size: 11px;
+    padding: 4px 8px;
+}
+
+.botao-remover:hover {
+    background-color: #b91c1c;
+}
+
+/* Folha A4 na Tela */
+.folha-documento {
+    width: 210mm;
+    min-height: 297mm;
+    background-color: #ffffff;
+    margin: 24px auto;
+    padding: 15mm;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+}
+
+/* Cabeçalho Técnico */
+.cabecalho-tecnico {
+    display: flex;
+    border: 1.5px solid #1e293b;
+    margin-bottom: 16px;
+}
+
+.bloco-marca {
+    padding: 10px 14px;
+    border-right: 1.5px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+}
+
+.texto-marca {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #1e293b;
+}
+
+.destaque-marca {
+    color: #0f766e;
+}
+
+.bloco-titulo {
+    flex: 1;
+    padding: 10px 12px;
+    border-right: 1.5px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.etiqueta-tipo {
+    font-size: 10px;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.input-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    outline: none;
+    width: 100%;
+    color: #0f172a;
+}
+
+.bloco-controle {
+    width: 190px;
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-controle {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-bottom: 1px solid #cbd5e1;
+    font-size: 11px;
+}
+
+.campo-controle:last-child {
+    border-bottom: none;
+}
+
+.campo-controle label {
+    font-weight: 700;
+    width: 55px;
+    color: #334155;
+}
+
+.campo-controle input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 11px;
+    color: #0f172a;
+}
+
+/* Seções */
+.secao-documento {
+    margin-bottom: 16px;
+}
+
+.titulo-secao {
+    background-color: #f1f5f9;
+    border-left: 4px solid #1e293b;
+    padding: 5px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.cabecalho-secao-dinamica {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f1f5f9;
+    border-left: 4px solid #1e293b;
+    padding: 4px 10px;
+    margin-bottom: 8px;
+}
+
+.cabecalho-secao-dinamica .titulo-secao {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Campos e Inputs */
+.grade-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+}
+
+.grade-dois-colunas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.grupo-campo {
+    display: flex;
+    flex-direction: column;
+}
+
+.grupo-campo label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 3px;
+}
+
+.grupo-campo input,
+.grupo-campo textarea {
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: #0f172a;
+    resize: vertical;
+}
+
+.grupo-campo input:focus,
+.grupo-campo textarea:focus {
+    border-color: #2563eb;
+    outline: none;
+}
+
+.margem-topo {
+    margin-top: 8px;
+}
+
+/* Cartões de Passo a Passo */
+.cartao-passo {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    page-break-inside: avoid;
+}
+
+.cabecalho-passo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 4px;
+}
+
+.numero-passo {
+    font-weight: 700;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.conteudo-passo {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+}
+
+.area-imagem-passo {
+    border: 1px dashed #94a3b8;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 90px;
+    background-color: #f8fafc;
+}
+
+.area-imagem-passo input[type="file"] {
+    font-size: 10px;
+    max-width: 100%;
+}
+
+.preview-imagem {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+    margin-top: 4px;
+    display: none;
+}
+
+/* Tabela de Riscos */
+.tabela-padrao {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.tabela-padrao th,
+.tabela-padrao td {
+    border: 1px solid #cbd5e1;
+    padding: 6px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.tabela-padrao th {
+    background-color: #f8fafc;
+    font-weight: 700;
+    font-size: 11px;
+    color: #334155;
+}
+
+.tabela-padrao textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-size: 12px;
+    background: transparent;
+}
+
+/* Assinaturas */
+.grade-assinaturas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.bloco-assinatura {
+    text-align: center;
+    padding-top: 6px;
+}
+
+.bloco-assinatura input {
+    width: 100%;
+    text-align: center;
+    border: 1px dashed #94a3b8;
+    background-color: #f8fafc;
+    border-radius: 3px;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    outline: none;
+    cursor: text;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.bloco-assinatura input:hover,
+.bloco-assinatura input:focus {
+    border-color: #2563eb;
+    border-style: solid;
+    background-color: #eff6ff;
+}
+
+.bloco-assinatura .sub-input {
+    font-size: 10px;
+    font-weight: 400;
+    color: #475569;
+    margin-bottom: 18px;
+}
+
+.linha-assinatura {
+    border-top: 1px solid #1e293b;
+    padding-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+}
+
+/* Regras de Impressão (PDF) */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    body {
+        background-color: #ffffff;
+        padding: 0;
+    }
+
+    .nao-imprimir {
+        display: none !important;
+    }
+
+    .folha-documento {
+        width: 100%;
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .area-imagem-passo.sem-imagem {
+        display: none !important;
+    }
+
+    .area-imagem-passo {
+        border: 1px solid #e2e8f0;
+        background-color: #ffffff;
+    }
+
+    .bloco-assinatura input {
+        border: none !important;
+        background-color: transparent !important;
+        padding: 0 !important;
+    }
+
+    .sem-quebra {
+        page-break-inside: avoid;
+    }
+}

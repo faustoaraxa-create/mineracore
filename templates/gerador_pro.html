@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de PRO / POP - MineraCore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gerador_pro.css') }}">
+</head>
+<body>
+
+    <div class="barra-ferramentas nao-imprimir">
+        <div class="identidade-barra">
+            <span class="marca-barra">MINERA<span class="destaque-barra">CORE</span></span>
+            <div class="divisor-barra"></div>
+            <div class="titulo-barra">
+                <strong>Editor Dinâmico de PRO / POP</strong>
+                <span>Preencha os campos e gere o documento em PDF</span>
+            </div>
+        </div>
+        <div class="acoes-barra">
+            <a href="{{ url_for('dashboard') }}" class="botao-secundario">Voltar ao Painel</a>
+            <button type="button" class="botao-secundario" id="botaoLimparFormulario">Limpar Tudo</button>
+            <button type="button" class="botao-primario" id="botaoGerarDocumento">Gerar PDF / Imprimir</button>
+        </div>
+    </div>
+
+    <main class="folha-documento" id="folhaDocumento">
+        
+        <header class="cabecalho-tecnico">
+            <div class="bloco-marca">
+                <span class="texto-marca">MINERA<span class="destaque-marca">CORE</span></span>
+            </div>
+            <div class="bloco-titulo">
+                <span class="etiqueta-tipo">PROCEDIMENTO OPERACIONAL (PRO / POP)</span>
+                <input type="text" id="tituloProcedimento" class="input-titulo" placeholder="Digite o Título da Atividade / Procedimento...">
+            </div>
+            <div class="bloco-controle">
+                <div class="campo-controle">
+                    <label>Código:</label>
+                    <input type="text" id="codigoDocumento" placeholder="Ex: PRO-MIN-001">
+                </div>
+                <div class="campo-controle">
+                    <label>Revisão:</label>
+                    <input type="text" id="revisaoDocumento" value="00">
+                </div>
+                <div class="campo-controle">
+                    <label>Data:</label>
+                    <input type="date" id="dataDocumento">
+                </div>
+            </div>
+        </header>
+
+        <section class="secao-documento">
+            <h2 class="titulo-secao">1. Identificação e Escopo</h2>
+            <div class="grade-campos">
+                <div class="grupo-campo">
+                    <label>Área / Setor:</label>
+                    <input type="text" id="areaSetor" placeholder="Ex: Operação de Mina / Beneficiamento">
+                </div>
+                <div class="grupo-campo">
+                    <label>Equipamento / Processo:</label>
+                    <input type="text" id="equipamentoProcesso" placeholder="Ex: Caminhão Fora de Estrada">
+                </div>
+                <div class="grupo-campo">
+                    <label>Executante (Cargo):</label>
+                    <input type="text" id="cargoExecutante" placeholder="Ex: Operador de Equipamentos">
+                </div>
+                <div class="grupo-campo">
+                    <label>Normas Aplicáveis:</label>
+                    <input type="text" id="normasAplicaveis" placeholder="Ex: NR-01, NR-06, NR-22">
+                </div>
+            </div>
+            <div class="grupo-campo margem-topo">
+                <label>Objetivo da Atividade:</label>
+                <textarea id="objetivoAtividade" rows="2" placeholder="Descreva brevemente o objetivo deste procedimento..."></textarea>
+            </div>
+        </section>
+
+        <section class="secao-documento">
+            <h2 class="titulo-secao">2. EPIs, Ferramentas e Materiais Necessários</h2>
+            <div class="grade-dois-colunas">
+                <div class="grupo-campo">
+                    <label>Equipamentos de Proteção Individual (EPIs):</label>
+                    <textarea id="listaEpis" rows="3" placeholder="Ex: Capacete com jugular, óculos de segurança, protetor auricular, botina..."></textarea>
+                </div>
+                <div class="grupo-campo">
+                    <label>Ferramentas, Recursos e Materiais:</label>
+                    <textarea id="listaFerramentas" rows="3" placeholder="Ex: Rádio comunicador, calços de roda, checklist..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section class="secao-documento">
+            <div class="cabecalho-secao-dinamica">
+                <h2 class="titulo-secao">3. Sequência de Execução (Passo a Passo)</h2>
+                <button type="button" class="botao-adicionar nao-imprimir" id="botaoAdicionarPasso">+ Adicionar Passo</button>
+            </div>
+
+            <div id="containerPassos" class="lista-passos"></div>
+        </section>
+
+        <section class="secao-documento">
+            <div class="cabecalho-secao-dinamica">
+                <h2 class="titulo-secao">4. Riscos Operacionais e Medidas de Controle</h2>
+                <button type="button" class="botao-adicionar nao-imprimir" id="botaoAdicionarRisco">+ Adicionar Risco</button>
+            </div>
+
+            <table class="tabela-padrao" id="tabelaRiscos">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Risco / Perigo Identificado</th>
+                        <th style="width: 35%;">Medida de Controle Preventiva</th>
+                        <th style="width: 30%;">Ação em Caso de Anomalia</th>
+                        <th class="nao-imprimir" style="width: 5%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabelaRiscos"></tbody>
+            </table>
+        </section>
+
+        <section class="secao-documento sem-quebra">
+            <h2 class="titulo-secao">5. Elaboração e Aprovação</h2>
+            <div class="grade-assinaturas">
+                <div class="bloco-assinatura">
+                    <input type="text" placeholder="Nome do Elaborador">
+                    <input type="text" class="sub-input" placeholder="Cargo / Matrícula">
+                    <div class="linha-assinatura">Elaborado por</div>
+                </div>
+                <div class="bloco-assinatura">
+                    <input type="text" placeholder="Nome do Revisor (Segurança / Técnico)">
+                    <input type="text" class="sub-input" placeholder="Cargo / Matrícula">
+                    <div class="linha-assinatura">Revisado por</div>
+                </div>
+                <div class="bloco-assinatura">
+                    <input type="text" placeholder="Nome do Aprovador (Gestão)">
+                    <input type="text" class="sub-input" placeholder="Cargo / Matrícula">
+                    <div class="linha-assinatura">Aprovado por</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/gerador_pro.js') }}"></script>
+</body>
+</html>

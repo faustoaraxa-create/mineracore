@@ -16,8 +16,6 @@ from rotas_maquinas import maquinas_bp
 from calculadora_diesel import diesel_bp
 from calculadora_britagem import britagem_bp
 
-
-
 load_dotenv()
 
 logging.basicConfig(
@@ -25,6 +23,12 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("mineracore")
+
+try:
+    from gerador_pro import gerador_pro_bp
+except ImportError as erro_importacao:
+    gerador_pro_bp = None
+    logger.warning(f"Módulo gerador_pro não carregado: {erro_importacao}")
 
 csrf = CSRFProtect()
 limiter = Limiter(
@@ -77,6 +81,10 @@ def create_app() -> Flask:
         diesel_bp,
         britagem_bp,
     ]
+
+    if gerador_pro_bp is not None:
+        blueprints.append(gerador_pro_bp)
+
     for bp in blueprints:
         app.register_blueprint(bp)
 
@@ -128,10 +136,15 @@ def create_app() -> Flask:
     @app.route("/sitemap.xml")
     @limiter.exempt
     def sitemap():
-        xml = """<?xml version="1.0" encoding="UTF-8"?>
+        url_gerador_pro = (
+            "\n    <url><loc>https://mineracore.com.br/gerador-pro</loc><priority>0.8</priority></url>"
+            if gerador_pro_bp is not None
+            else ""
+        )
+        xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url><loc>https://mineracore.com.br/</loc><priority>1.0</priority></url>
-    <url><loc>https://mineracore.com.br/dashboard</loc><priority>0.8</priority></url>
+    <url><loc>https://mineracore.com.br/dashboard</loc><priority>0.8</priority></url>{url_gerador_pro}
 </urlset>"""
         return xml, 200, {"Content-Type": "application/xml"}
 
